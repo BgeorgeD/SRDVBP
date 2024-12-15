@@ -1,9 +1,58 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ro">
 <head>
-    <title>Vacation Recommender</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bine ai venit!</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            color: #fff;
+            text-align: center;
+            background: url('/images/index.jpg') no-repeat center center/cover;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 120px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .slogan {
+            font-size: 50px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+
+        .btn {
+            text-decoration: none;
+            background: #ff7f50;
+            color: #fff;
+            padding: 30px 60px;
+            border-radius: 50px;
+            transition: 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn:hover {
+            background: #ff6347;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.6);
+            transform: scale(1.1);
+        }
+    </style>
 </head>
 <body>
-<h1>Welcome to the Vacation Recommender App</h1>
+<h1>Bine ai venit!</h1>
+<div class="slogan">Explorează destinațiile ideale pentru vacanța ta</div>
+<a href="/login" class="btn">Intră în cont</a>
 </body>
 </html>

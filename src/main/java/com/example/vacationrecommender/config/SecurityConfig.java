@@ -87,7 +87,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**", "/js/**" ,"/images/**","/videos/**").permitAll()
+                        .requestMatchers("/index","/login", "/css/**", "/js/**" ,"/images/**","/videos/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -108,7 +108,8 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return NoOpPasswordEncoder.getInstance(); // Folosește acest encoder pentru testare
+        PasswordEncoder instance = NoOpPasswordEncoder.getInstance();
+        return instance; // Folosește acest encoder pentru testare
     }
 
 

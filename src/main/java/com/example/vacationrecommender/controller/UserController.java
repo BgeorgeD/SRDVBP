@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class UserController {
 
     @GetMapping("/login")
-    public String showLoginPage() {
+    public String showloginPage() {
         System.out.println("Accessing login page..."); // Log pentru debug
         return "login";
     }
