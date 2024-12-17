@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestiune Destinații</title>
+  <style>
+    /* Stiluri Generale */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    h1 {
+      background-color: #007bff;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 20px 0;
+    }
+
+    .container {
+      width: 80%;
+      margin: 20px auto;
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    /* Formular */
+    .form-container {
+      background: #e9ecef;
+      padding: 20px;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+      margin: auto;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #218838;
+    }
+
+    /* Tabel */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    table th,
+    table td {
+      padding: 12px;
+      text-align: center;
+      border: 1px solid #ddd;
+    }
+
+    table th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    table tr:hover {
+      background-color: #f1f1f1;
+    }
+
+    /* Butoane de ștergere */
+    .delete-btn {
+      background: #dc3545;
+      padding: 8px 12px;
+      font-size: 14px;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .delete-btn:hover {
+      background: #c82333;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Gestiune Destinații</h1>
+
+<div class="container">
+  <!-- Formular pentru Adăugare -->
+  <form method="post" th:action="@{/admin/destinations/add}" th:object="${destination}">
+    <input type="text" th:field="*{name}" placeholder="Nume Destinație" required>
+    <input type="text" th:field="*{description}" placeholder="Descriere" required>
+    <input type="text" th:field="*{activities}" placeholder="Activități" required>
+    <input type="number" step="0.01" th:field="*{budget}" placeholder="Buget" required>
+    <input type="text" th:field="*{climate}" placeholder="Climat" required>
+    <button type="submit">Adaugă Destinație</button>
+  </form>
+
+
+  <!-- Tabel pentru Afișare Destinații -->
+  <h2 style="text-align: center; margin: 20px 0;">Lista Destinațiilor</h2>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Nume</th>
+      <th>Descriere</th>
+      <th>Acțiuni</th>
+    </tr>
+    <!-- Exemplu pentru fiecare destinație -->
+    <tr th:each="dest : ${destinations}">
+      <td th:text="${dest.id}">1</td>
+      <td th:text="${dest.name}">Vacanță la Munte</td>
+      <td th:text="${dest.description}">Peisaje montane uimitoare</td>
+      <td>
+        <form method="post" th:action="@{'/admin/destinations/delete/' + ${dest.id}}">
+          <button type="submit" class="delete-btn">Șterge</button>
+        </form>
+      </td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>

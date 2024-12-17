@@ -86,14 +86,22 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+
+
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/index","/login", "/css/**", "/js/**" ,"/images/**","/videos/**").permitAll()
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/home", true) // Redirect după login reușit
                         .permitAll()
+                )
+
+                .exceptionHandling(exception -> exception
+                        .accessDeniedPage("/access_denied") // Redirecționează la pagina "access-denied"
                 )
 
                 .logout(logout -> logout
@@ -111,6 +119,8 @@ public class SecurityConfig {
         PasswordEncoder instance = NoOpPasswordEncoder.getInstance();
         return instance; // Folosește acest encoder pentru testare
     }
+
+
 
 
 
