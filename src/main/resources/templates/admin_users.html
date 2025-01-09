@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionare Utilizatori</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .form-container {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-container h2 {
+            margin-top: 0;
+            font-size: 24px;
+            color: #007bff;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        input, select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        table tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Gestionare Utilizatori</h1>
+</header>
+
+<div class="container">
+    <!-- Formular pentru adăugare -->
+    <div class="form-container">
+        <h2>Adaugă Utilizator</h2>
+        <form method="post" th:action="@{/admin/users/add}" th:object="${user}">
+            <input type="text" th:field="*{username}" placeholder="Nume utilizator" required>
+            <input type="password" th:field="*{password}" placeholder="Parolă" required>
+            <select th:field="*{role}">
+                <option value="ROLE_USER">Utilizator</option>
+                <option value="ROLE_ADMIN">Administrator</option>
+            </select>
+            <button type="submit">Adaugă Utilizator</button>
+        </form>
+    </div>
+
+    <!-- Tabel cu utilizatori -->
+    <h2 style="text-align: center;">Lista Utilizatorilor</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nume utilizator</th>
+            <th>Rol</th>
+            <th>Acțiuni</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}">1</td>
+            <td th:text="${user.username}">exemplu_user</td>
+            <td th:text="${user.role}">ROLE_USER</td>
+            <td>
+                <form method="post" th:action="@{'/admin/users/delete/' + ${user.id}}">
+                    <button type="submit" class="delete-btn">Șterge</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>

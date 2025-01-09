@@ -1,0 +1,56 @@
+[33mcommit 1ccd7cd0acc094424a8e37d32300fad251864287[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: BgeorgeD <danibura02@gmail.com>
+Date:   Tue Dec 17 15:29:10 2024 +0200
+
+    Adăugat funcționalitatea de gestionare a destinațiilor în admin si imbunatatiri in ceea ce priveste partea de front-end
+
+[33mcommit 7eb6a145fbda51dab6b1429799883c1cec63da3a[m
+Author: BgeorgeD <danibura02@gmail.com>
+Date:   Sun Dec 15 20:03:49 2024 +0200
+
+    Adăugat pagina mountain, city, jungle si sea cu imagine de fundal și actualizări stiluri
+
+[33mcommit 8b283956d9db1928182b57faffbc289bb71e27ad[m
+Author: BgeorgeD <danibura02@gmail.com>
+Date:   Sun Dec 15 18:47:28 2024 +0200
+
+    Actualizat fluxul inițial: index -> login -> home, dar si alte modificari
+
+[33mcommit 8842a78f55f22f761b85d47d25b210c48627776c[m
+Author: BgeorgeD <danibura02@gmail.com>
+Date:   Sat Dec 14 23:00:58 2024 +0200
+
+    Am rezolvat problema cu resursele statice și am ajustat căile pentru imagini și videoclipuri
+
+[33mcommit a7a4c384b25c9af7d1b279ba930cdd591dbf5954[m
+Author: BgeorgeD <danibura02@gmail.com>
+Date:   Sat Dec 14 21:47:23 2024 +0200
+
+    Actualizare readme
+
+[33mcommit 6cdc4a760c52bc9a4fba0f89c833f69a4d4d3630[m[33m ([m[1;32mmain1[m[33m)[m
+Merge: 6e64946 8524fc2
+Author: BgeorgeD <danibura02@gmail.com>
+Date:   Sat Dec 14 21:36:13 2024 +0200
+
+    Resolved merge conflicts
+
+[33mcommit 6e64946bbee78507bea9273c228922cb1c6d10e9[m
+Author: BgeorgeD <danibura02@gmail.com>
+Date:   Sat Dec 14 21:26:25 2024 +0200
+
+    Log in functional impreuna cu noua baza de date mysql
+
+[33mcommit 8524fc291e40f7b2802b8ccd72c6e7a3928333a8[m
+Author: BgeorgeD <144981273+BgeorgeD@users.noreply.github.com>
+Date:   Sat Dec 14 15:34:56 2024 +0200
+
+    Proiect
+    
+    Full project
+
+[33mcommit 39485f923dd4f77a2f229c9ab30c6a60462328d1[m
+Author: BgeorgeD <144981273+BgeorgeD@users.noreply.github.com>
+Date:   Mon Oct 21 23:05:18 2024 +0300
+
+    Initial commit
