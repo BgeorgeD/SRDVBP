@@ -13,6 +13,11 @@ public class Destination {
     private String activities;
     private Double budget;
     private String climate;
+    private String image; // URL sau cale pentru imagine
+    private String video; // URL sau cale pentru video
+
+    public Destination() {
+    }
 
     // Getters și Setters
     public Long getId() { return id; }

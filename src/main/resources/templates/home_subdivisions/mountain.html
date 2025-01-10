@@ -6,69 +6,144 @@
     <title>Vacanță Montană</title>
     <style>
         body {
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            color: #ffffff;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background: url('/images/munte.jpg') no-repeat center center/cover;
+            height: 300px;
+            color: white;
             text-align: center;
-            background: url('/images/munte.jpg') no-repeat center center fixed;
-            background-size: cover;
-            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
 
-        .content {
-            margin-top: 15%;
-            animation: fadeIn 2s ease-in-out;
+        header h1 {
+            margin: 0;
+            font-size: 3em;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
         }
 
-        .title {
-            font-size: 100px;
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .description {
-            font-size: 50px;
+            text-align: center;
             margin-bottom: 30px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            color: #333;
         }
 
-        .button {
+        .rating-section,
+        .comments-section {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
             display: inline-block;
-            padding: 20px 40px;
-            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .rating-form,
+        .comment-form {
+            margin-top: 20px;
+        }
+
+        .rating-form input,
+        .comment-form textarea,
+        .comment-form input {
+            width: calc(100% - 20px);
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .rating-form button,
+        .comment-form button {
+            padding: 10px 20px;
+            background-color: #007bff;
             color: white;
-            background-color: rgba(0, 0, 0, 0.6);
-            border: 2px solid white;
-            border-radius: 10px;
-            text-decoration: none;
-            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-        .button:hover {
-            background-color: rgba(255, 255, 255, 0.3);
-            transform: scale(1.1);
+        .rating-form button:hover,
+        .comment-form button:hover {
+            background-color: #0056b3;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+        .comment {
+            background: #f9f9f9;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .comment strong {
+            color: #333;
+        }
+
+        .comment em {
+            font-size: 0.9em;
+            color: #666;
         }
     </style>
 </head>
 <body>
-<!-- Conținutul principal -->
-<div class="content">
-    <div class="title">Vacanță Montană</div>
+<header>
+    <h1>Vacanță Montană</h1>
+</header>
+
+<div class="container">
+    <!-- Descriere destinație -->
     <div class="description">
-        Bucură-te de peisaje spectaculoase, aer curat și aventuri pe munte.
-        Explorează trasee uimitoare și locuri de neuitat!
+        <p th:text="${destination.description}">
+            Bucură-te de peisaje spectaculoase, aer curat și aventuri de neuitat pe munte!
+        </p>
     </div>
-    <a href="/home" class="button">Înapoi la Pagina Principală</a>
+
+    <!-- Secțiunea de rating -->
+    <div class="rating-section">
+        <h2>Rating</h2>
+        <p th:text="'Rating mediu: ' + ${averageRating} + ' stele'">Rating mediu: 4.8 stele</p>
+        <form class="rating-form" method="post" th:action="@{/ratings/add}">
+            <input type="hidden" name="destinationId" th:value="${destination.id}">
+            <label for="stars">Acordă un rating (1-5):</label>
+            <input type="number" id="stars" name="stars" min="1" max="5" required>
+            <button type="submit">Adaugă Rating</button>
+        </form>
+    </div>
+
+    <!-- Secțiunea de comentarii -->
+    <div class="comments-section">
+        <h2>Comentarii</h2>
+        <div th:each="comment : ${comments}" class="comment">
+            <p><strong th:text="${comment.user}">Utilizator</strong></p>
+            <p th:text="${comment.text}">Comentariu...</p>
+            <p><em th:text="${comment.date}">Data: 2025-01-10</em></p>
+        </div>
+        <form class="comment-form" method="post" th:action="@{/comments/add}">
+            <input type="hidden" name="destinationId" th:value="${destination.id}">
+            <textarea name="text" rows="4" placeholder="Adaugă un comentariu..." required></textarea>
+            <input type="text" name="user" placeholder="Nume utilizator" required>
+            <button type="submit">Adaugă Comentariu</button>
+        </form>
+    </div>
 </div>
 </body>
 </html>

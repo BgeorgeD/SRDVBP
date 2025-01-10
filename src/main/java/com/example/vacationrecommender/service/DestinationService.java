@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DestinationService {
@@ -55,6 +56,11 @@ public class DestinationService {
 
     public void deleteDestinationById(Long id) {
         destinationRepository.deleteById(id);
+    }
+
+    public Destination findDestinationById(Long id) {
+        Optional<Destination> optionalDestination = destinationRepository.findById(id);
+        return optionalDestination.orElse(null); // Returnează null dacă destinația nu există
     }
 }
 

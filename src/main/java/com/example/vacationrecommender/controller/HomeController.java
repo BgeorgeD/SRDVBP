@@ -1,4 +1,4 @@
-package com.example.vacationrecommender.controller;
+/*package com.example.vacationrecommender.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,5 +30,76 @@ public class HomeController {
     public String showJunglePage() {
         return "home_subdivisions/jungle";
     }
+}*/
+package com.example.vacationrecommender.controller;
+
+import com.example.vacationrecommender.service.CommentService;
+import com.example.vacationrecommender.service.DestinationService;
+import com.example.vacationrecommender.service.RatingService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class HomeController {
+
+    private final DestinationService destinationService;
+    private final CommentService commentService;
+    private final RatingService ratingService;
+
+    public HomeController(DestinationService destinationService, CommentService commentService, RatingService ratingService) {
+        this.destinationService = destinationService;
+        this.commentService = commentService;
+        this.ratingService = ratingService;
+    }
+
+    @GetMapping("/home")
+    public String showHomePage() {
+        System.out.println("Accessing home page..."); // Log pentru debug
+        return "home";
+    }
+
+    @GetMapping("/mountain")
+    public String showMountainPage(ModelMap model) {
+        Long mountainDestinationId = 1L; // ID-ul destinației montane
+        populateModelWithDestinationData(mountainDestinationId, model);
+        return "home_subdivisions/mountain";
+    }
+
+    @GetMapping("/sea")
+    public String showSeaPage(ModelMap model) {
+        Long seaDestinationId = 2L; // ID-ul destinației la mare
+        populateModelWithDestinationData(seaDestinationId, model);
+        return "home_subdivisions/sea";
+    }
+
+    @GetMapping("/city")
+    public String showCityPage(ModelMap model) {
+        Long cityDestinationId = 3L; // ID-ul destinației culturale
+        populateModelWithDestinationData(cityDestinationId, model);
+        return "home_subdivisions/city";
+    }
+
+    @GetMapping("/jungle")
+    public String showJunglePage(ModelMap model) {
+        Long jungleDestinationId = 4L; // ID-ul destinației în natură
+        populateModelWithDestinationData(jungleDestinationId, model);
+        return "home_subdivisions/jungle";
+    }
+
+    /**
+     * Metodă auxiliară pentru a popula modelul cu datele necesare.
+     */
+    private void populateModelWithDestinationData(Long destinationId, ModelMap model) {
+        var destination = destinationService.findDestinationById(destinationId);
+        if (destination == null) {
+            throw new IllegalArgumentException("Destinația cu ID-ul " + destinationId + " nu există.");
+        }
+
+        model.put("destination", destination); // Destinația specifică
+        model.put("comments", commentService.getCommentsByDestination(destinationId)); // Comentariile
+        model.put("averageRating", ratingService.calculateAverageRating(destinationId)); // Ratingul mediu
+    }
 }
+
 
