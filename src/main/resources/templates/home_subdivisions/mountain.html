@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
@@ -44,8 +44,7 @@
             color: #333;
         }
 
-        .rating-section,
-        .comments-section {
+        .rating-section {
             margin-bottom: 30px;
         }
 
@@ -56,14 +55,7 @@
             margin-bottom: 10px;
         }
 
-        .rating-form,
-        .comment-form {
-            margin-top: 20px;
-        }
-
-        .rating-form input,
-        .comment-form textarea,
-        .comment-form input {
+        .rating-form input {
             width: calc(100% - 20px);
             margin: 10px 0;
             padding: 10px;
@@ -71,8 +63,7 @@
             border-radius: 5px;
         }
 
-        .rating-form button,
-        .comment-form button {
+        .rating-form button {
             padding: 10px 20px;
             background-color: #007bff;
             color: white;
@@ -81,9 +72,90 @@
             cursor: pointer;
         }
 
-        .rating-form button:hover,
-        .comment-form button:hover {
+        .rating-form button:hover {
             background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Vacanță Montană</h1>
+</header>
+
+<div class="container">
+
+    <div class="description">
+        <p th:text="${destination.description}">
+            Bucură-te de peisaje spectaculoase, aer curat și aventuri de neuitat pe munte!
+        </p>
+    </div>
+
+
+    <div class="rating-section">
+        <h2>Rating</h2>
+        <p th:text="'Rating mediu: ' + ${#numbers.formatDecimal(averageRating, 0, 2)} + ' stele'">
+
+        </p>
+
+        <form class="rating-form" method="post" th:action="@{/ratings/add}">
+            <input type="hidden" name="destinationId" th:value="${destination.id}">
+            <label for="stars">Acordă un rating (1-5):</label>
+            <input type="number" id="stars" name="stars" min="1" max="5" required>
+            <button type="submit">Adaugă Rating</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>-->
+<!--<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comentarii Vacanță</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background: url('/images/munte.jpg') no-repeat center center/cover;
+            height: 300px;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 3em;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .comments-section {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            display: inline-block;
+            margin-bottom: 10px;
         }
 
         .comment {
@@ -102,48 +174,283 @@
             font-size: 0.9em;
             color: #666;
         }
+
+        .comment-form textarea,
+        .comment-form input {
+            width: calc(100% - 20px);
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .comment-form button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .comment-form button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
 <header>
-    <h1>Vacanță Montană</h1>
+    <h1>Comentarii Vacanță</h1>
 </header>
 
 <div class="container">
-    <!-- Descriere destinație -->
-    <div class="description">
-        <p th:text="${destination.description}">
-            Bucură-te de peisaje spectaculoase, aer curat și aventuri de neuitat pe munte!
-        </p>
+
+    <div class="comments-section">
+        <h2>Comentarii</h2>
+        <div th:each="comment : ${comments}">
+            <p>
+                <strong>Utilizator:</strong> <span th:text="${comment.username}">Nume utilizator</span><br>
+                <strong>Comentariu:</strong> <span th:text="${comment.text}">Conținut comentariu</span><br>
+                <strong>Data:</strong> <span th:text="${comment.formattedDate}">Data</span>
+
+            </p>
+            <hr>
+        </div>
+
+
+        <form method="post" th:action="@{/comments/add}">
+            <input type="hidden" name="destinationId" th:value="${destination.id}">
+            <textarea name="text" rows="4" placeholder="Adaugă un comentariu..." required></textarea>
+            <input type="text" name="username" placeholder="Nume utilizator" required>
+            <button type="submit">Adaugă Comentariu</button>
+        </form>
+
+
+
+    </div>
+</div>
+</body>
+</html>-->
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vacanță Completă</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Fundal video */
+        .background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1; /* Să fie în spatele conținutului */
+        }
+
+        header {
+            height: 300px;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent pentru text */
+            position: relative;
+            z-index: 1; /* Să fie peste video */
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 3em;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1; /* Să fie peste video */
+        }
+
+        .carousel {
+            position: relative;
+            max-width: 100%;
+            margin: 20px auto;
+        }
+
+        .carousel-content {
+            display: none;
+        }
+
+        .carousel-content.active {
+            display: block;
+            text-align: center;
+        }
+
+        .carousel img,
+        .carousel video {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .carousel-controls {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .carousel-controls button {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .carousel-controls button:hover {
+            background-color: #0056b3;
+        }
+
+        .form-section {
+            margin-top: 20px;
+        }
+
+        .form-section input,
+        .form-section textarea {
+            width: calc(100% - 20px);
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-section button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .form-section button:hover {
+            background-color: #0056b3;
+        }
+
+        .comments-section {
+            margin-top: 20px;
+        }
+
+        .comment {
+            background: #f9f9f9;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<!-- Fundal video -->
+<video class="background-video" autoplay loop muted>
+    <source src="videos/munte.mp4" type="video/mp4">
+    Browser-ul tău nu suportă videoclipuri HTML5.
+</video>
+
+<header>
+    <h1>Munții Bucegi</h1>
+</header>
+
+<div class="container">
+    <!-- Carousel pentru imagini și videoclipuri -->
+    <div class="carousel">
+        <div class="carousel-content active">
+            <img src="images/bugegi1.jpg" alt="Imagine 1">
+        </div>
+        <div class="carousel-content">
+            <img src="images/bucegi2.jpg" alt="Imagine 2">
+        </div>
+        <div class="carousel-content">
+            <img src="images/bucegi3.jpg" alt="Imagine 3">
+        </div>
+        <div class="carousel-content">
+            <video controls>
+                <source src="videos/bucegivideo.mp4" type="video/mp4">
+                Browser-ul tău nu suportă videoclipuri.
+            </video>
+        </div>
+        <div class="carousel-controls">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
     </div>
 
-    <!-- Secțiunea de rating -->
-    <div class="rating-section">
-        <h2>Rating</h2>
-        <p th:text="'Rating mediu: ' + ${averageRating} + ' stele'">Rating mediu: 4.8 stele</p>
-        <form class="rating-form" method="post" th:action="@{/ratings/add}">
-            <input type="hidden" name="destinationId" th:value="${destination.id}">
-            <label for="stars">Acordă un rating (1-5):</label>
-            <input type="number" id="stars" name="stars" min="1" max="5" required>
-            <button type="submit">Adaugă Rating</button>
+    <!-- Formular unic pentru comentarii și rating -->
+    <div class="form-section">
+        <form method="post" th:action="@{/submitFeedback}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <input type="hidden" name="destinationId" th:value="${destination.id}" />
+            <textarea name="text" rows="4" placeholder="Scrie un comentariu..." required></textarea>
+            <input type="number" name="stars" min="1" max="5" placeholder="Acordă un rating (1-5)" required />
+            <p th:text="'Rating mediu: ' + ${#numbers.formatDecimal(averageRating, 1, 2)} + ' stele'">
+                Rating mediu: 4.25 stele
+            </p>
+
+            <input type="text" name="user" placeholder="Nume utilizator" required />
+            <button type="submit">Trimite Feedback</button>
         </form>
+
     </div>
 
     <!-- Secțiunea de comentarii -->
     <div class="comments-section">
         <h2>Comentarii</h2>
-        <div th:each="comment : ${comments}" class="comment">
-            <p><strong th:text="${comment.user}">Utilizator</strong></p>
-            <p th:text="${comment.text}">Comentariu...</p>
-            <p><em th:text="${comment.date}">Data: 2025-01-10</em></p>
+        <div th:each="comment : ${comments}">
+            <div class="comment">
+                <strong>Utilizator:</strong> <span th:text="${comment.username}">Nume utilizator</span><br>
+                <strong>Comentariu:</strong> <span th:text="${comment.text}">Conținut comentariu</span><br>
+                <strong>Data:</strong> <span th:text="${#temporals.format(comment.date, 'yyyy-MM-dd HH:mm')}">Data</span>
+
+            </div>
         </div>
-        <form class="comment-form" method="post" th:action="@{/comments/add}">
-            <input type="hidden" name="destinationId" th:value="${destination.id}">
-            <textarea name="text" rows="4" placeholder="Adaugă un comentariu..." required></textarea>
-            <input type="text" name="user" placeholder="Nume utilizator" required>
-            <button type="submit">Adaugă Comentariu</button>
-        </form>
     </div>
 </div>
+
+<script>
+    const carouselContents = document.querySelectorAll('.carousel-content');
+    let currentIndex = 0;
+
+    document.getElementById('prev').addEventListener('click', () => {
+        carouselContents[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex - 1 + carouselContents.length) % carouselContents.length;
+        carouselContents[currentIndex].classList.add('active');
+    });
+
+    document.getElementById('next').addEventListener('click', () => {
+        carouselContents[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex + 1) % carouselContents.length;
+        carouselContents[currentIndex].classList.add('active');
+    });
+</script>
 </body>
 </html>
+
+

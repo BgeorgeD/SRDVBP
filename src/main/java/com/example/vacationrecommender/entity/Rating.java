@@ -14,17 +14,31 @@ public class Rating {
 
     private int stars;
 
-    public void setDestination(Destination destination) {
+    // Constructor fără argumente
+    public Rating() {}
+
+    // Getters și Setters
+    public Long getId() {
+        return id;
     }
 
-    public void setStars(int stars) {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Destination getDestination() {
+        return destination;
+    }
+
+    public void setDestination(Destination destination) {
+        this.destination = destination;
     }
 
     public int getStars() {
-        return 0;
-    };
+        return stars;
+    }
 
-
-    // Getters și Setters
+    public void setStars(int stars) {
+        this.stars = stars;
+    }
 }
-

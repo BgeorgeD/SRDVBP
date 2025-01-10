@@ -87,6 +87,7 @@ public class HomeController {
         return "home_subdivisions/jungle";
     }
 
+
     /**
      * Metodă auxiliară pentru a popula modelul cu datele necesare.
      */

@@ -4,44 +4,46 @@ import com.example.vacationrecommender.entity.Comment;
 import com.example.vacationrecommender.entity.Destination;
 import com.example.vacationrecommender.repository.CommentRepository;
 import org.springframework.stereotype.Service;
+import java.time.ZoneId;
+import java.util.Date;
+import java.time.format.DateTimeFormatter;
 
+
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class CommentService {
     private final CommentRepository commentRepository;
+    private final DestinationService destinationService;
 
-    public CommentService(CommentRepository commentRepository) {
+    public CommentService(CommentRepository commentRepository, DestinationService destinationService) {
         this.commentRepository = commentRepository;
+        this.destinationService = destinationService;
     }
 
-    // Adaugă un comentariu legat de o destinație
-    public void addComment(Long destinationId, String text, String user) {
+
+    public void addComment(Long destinationId, String text, String username) {
         Comment comment = new Comment();
-        Destination destination = new Destination();
-        destination.setId(destinationId); // Setează ID-ul destinației
+        comment.setText(text);
+        comment.setUsername(username);
+        comment.setDate(LocalDateTime.now());
+
+        // Găsește destinația din baza de date
+        Destination destination = destinationService.getById(destinationId);
 
         comment.setDestination(destination);
-        comment.setText(text);
-        comment.setUser(user);
-
         commentRepository.save(comment);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        comment.setFormattedDate(LocalDateTime.now().format(formatter));
     }
 
-    // Găsește toate comentariile pentru o destinație
     public List<Comment> getCommentsByDestination(Long destinationId) {
-        return commentRepository.findByDestinationId(destinationId);
-    }
+        return commentRepository.findByDestinationId(destinationId);}
 
-    // Salvează un comentariu
-    public Comment saveComment(Comment comment) {
-        return commentRepository.save(comment);
-    }
-
-    // Găsește toate comentariile
-    public List<Comment> findAllComments() {
-        return commentRepository.findAll();
-    }
 }
+
 
 

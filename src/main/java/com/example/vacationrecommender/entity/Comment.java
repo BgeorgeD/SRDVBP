@@ -13,11 +13,15 @@ public class Comment {
     @JoinColumn(name = "destination_id", nullable = false)
     private Destination destination;
 
+    @Column(nullable = false)
     private String text;
-    private String user;
 
-    private LocalDateTime timestamp;
+    @Column(nullable = false)
+    private String username;
 
+    private LocalDateTime date;
+
+    // Getters și Setters
     public Long getId() {
         return id;
     }
@@ -42,21 +46,30 @@ public class Comment {
         this.text = text;
     }
 
-    public String getUser() {
-        return user;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUser(String user) {
-        this.user = user;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public LocalDateTime getTimestamp() {
-        return timestamp;
+    public LocalDateTime getDate() {
+        return date;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
+    public void setDate(LocalDateTime date) {
+        this.date = date;
     }
+    private String formattedDate;
+
+    // Getter și setter pentru formattedDate
+    public String getFormattedDate() {
+        return formattedDate;
+    }
+
+    public void setFormattedDate(String formattedDate) {
+        this.formattedDate = formattedDate;
+    }
+
 }
-
-

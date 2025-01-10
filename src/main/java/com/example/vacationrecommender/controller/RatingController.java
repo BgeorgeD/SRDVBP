@@ -23,7 +23,7 @@ public class RatingController {
     public String addRating(@RequestParam Long destinationId,
                             @RequestParam int stars) {
         ratingService.addRating(destinationId, stars);
-        return "redirect:/destination/" + destinationId; // Redirecționează la pagina destinației
+        return "redirect:/mountain"; // Schimbă URL-ul în cel al paginii tale
     }
 
     // Afișează rating-ul mediu pentru o destinație

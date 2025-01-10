@@ -45,6 +45,15 @@ public class DestinationService {
     public DestinationService(DestinationRepository destinationRepository) {
         this.destinationRepository = destinationRepository;
     }
+    public Optional<Destination> findById(Long id) {
+        return destinationRepository.findById(id);
+    }
+
+    public Destination getById(Long id) {
+        return destinationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Destinația cu ID-ul " + id + " nu există."));
+    }
+
 
     public List<Destination> findAllDestinations() {
         return destinationRepository.findAll();
