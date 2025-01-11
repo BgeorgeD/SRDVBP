@@ -4,37 +4,113 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestionare Recenzii</title>
+
   <style>
+    /* Stiluri pentru notificări */
+    .notification-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 350px;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 10px;
+    }
+
+    .notification {
+      background-color: #007bff;
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: transform 0.3s, opacity 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .notification:hover {
+      transform: scale(1.05);
+    }
+
+    .notification-header {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .notification-body {
+      font-size: 0.9em;
+      margin-bottom: 10px;
+    }
+
+    .notification-close {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2em;
+      cursor: pointer;
+    }
+
+    /* Stiluri pentru tabel */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 2em;
+      color: #333;
+    }
+
     table {
-      width: 100%;
+      width: 80%;
+      margin: 20px auto;
       border-collapse: collapse;
-      margin: 20px 0;
-      font-size: 1em;
-      text-align: left;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background: white;
     }
+
     th, td {
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
+      padding: 15px;
+      text-align: left;
+      border: 1px solid #ddd;
     }
+
     th {
       background-color: #007bff;
       color: white;
     }
-    .delete-btn {
-      background-color: #e74c3c;
+
+    td {
+      font-size: 0.95em;
+    }
+
+    button.delete-btn {
+      padding: 10px 15px;
+      background-color: #dc3545;
       color: white;
       border: none;
-      padding: 5px 10px;
       border-radius: 5px;
       cursor: pointer;
+      font-size: 0.9em;
     }
-    .delete-btn:hover {
-      background-color: #c0392b;
+
+    button.delete-btn:hover {
+      background-color: #c82333;
     }
+
   </style>
 </head>
 <body>
 <h1>Gestionare Recenzii</h1>
+
+<!-- Tabel pentru recenzii -->
 <table>
   <thead>
   <tr>
@@ -60,5 +136,51 @@
   </tr>
   </tbody>
 </table>
+
+<!-- Container pentru notificări -->
+<div class="notification-container" id="notification-container"></div>
+
+<!-- Scripturile pentru WebSocket și notificări -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script>
+  const socket = new SockJS('/ws'); // Creează conexiunea WebSocket
+  const stompClient = Stomp.over(socket);
+
+  stompClient.connect({}, function (frame) {
+    console.log('Conectat la WebSocket: ' + frame);
+
+    // Ascultă notificările
+    stompClient.subscribe('/topic/notifications', function (message) {
+      const data = JSON.parse(message.body); // Presupunem că serverul trimite JSON
+      showNotification(data.username, data.text, data.date);
+    });
+  });
+
+  function showNotification(username, text, date) {
+    const container = document.getElementById('notification-container');
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+
+    notification.innerHTML = `
+        <div class="notification-header">Comentariu nou de la ${username}</div>
+        <div class="notification-body">${text}</div>
+        <small>${new Date(date).toLocaleString()}</small>
+        <button class="notification-close" onclick="removeNotification(this)">✖</button>
+      `;
+
+    notification.addEventListener('click', () => {
+      alert(`Utilizator: ${username}\nComentariu: ${text}\nData: ${new Date(date).toLocaleString()}`);
+    });
+
+    container.appendChild(notification);
+  }
+
+  function removeNotification(button) {
+    const notification = button.parentElement;
+    notification.style.opacity = '0';
+    setTimeout(() => notification.remove(), 300);
+  }
+</script>
 </body>
 </html>
