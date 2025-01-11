@@ -1,6 +1,7 @@
 package com.example.vacationrecommender.controller;
 
 
+import com.example.vacationrecommender.entity.Destination;
 import com.example.vacationrecommender.service.CommentService;
 import com.example.vacationrecommender.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,33 +24,31 @@ public class FeedbackController {
     }
 
     @PostMapping("/submitFeedback")
-    public RedirectView submitFeedback(
-            @RequestParam("destinationId") Long destinationId,
-            @RequestParam("text") String text,
-            @RequestParam("stars") int stars,
-            @RequestParam("user") String user,
-            RedirectAttributes redirectAttributes) {
-        System.out.println("Destination ID: " + destinationId);
-        System.out.println("Text: " + text);
-        System.out.println("Stars: " + stars);
-        System.out.println("User: " + user);
+    public String submitFeedback(@RequestParam("destinationId") Long destinationId,
+                                 @RequestParam("text") String text,
+                                 @RequestParam("stars") int stars,
+                                 @RequestParam("user") String username) {
+        // Salvează comentariul
+        commentService.addComment(destinationId, text, username);
 
-        try {
-            // Salvează comentariul
-            commentService.addComment(destinationId, text, user);
+        // Salvează rating-ul
+        ratingService.addRating(destinationId, stars);
 
-            // Salvează rating-ul
-            ratingService.addRating(destinationId, stars);
-
-            // Mesaj de succes
-            redirectAttributes.addFlashAttribute("successMessage", "Feedback-ul a fost trimis cu succes!");
-        } catch (Exception e) {
-            // Mesaj de eroare
-            redirectAttributes.addFlashAttribute("errorMessage", "A apărut o eroare la trimiterea feedback-ului.");
+        // Redirecționează către pagina potrivită
+        if (destinationId == 1) {
+            return "redirect:/mountain";
+        } else if (destinationId == 2) {
+            return "redirect:/sea";
+        } else if (destinationId == 3) {
+            return "redirect:/city";
+        } else if (destinationId == 4) {
+            return "redirect:/jungle";
+        } else {
+            throw new IllegalArgumentException("Destinația cu ID-ul " + destinationId + " nu există.");
         }
-
-        // Redirecționează către "/mountain"
-        return new RedirectView("/mountain");
     }
+
+
+
 }
 

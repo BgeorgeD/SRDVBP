@@ -33,12 +33,14 @@ public class HomeController {
 }*/
 package com.example.vacationrecommender.controller;
 
+import ch.qos.logback.core.model.Model;
 import com.example.vacationrecommender.service.CommentService;
 import com.example.vacationrecommender.service.DestinationService;
 import com.example.vacationrecommender.service.RatingService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class HomeController {
@@ -88,6 +90,7 @@ public class HomeController {
     }
 
 
+
     /**
      * Metodă auxiliară pentru a popula modelul cu datele necesare.
      */
@@ -101,6 +104,35 @@ public class HomeController {
         model.put("comments", commentService.getCommentsByDestination(destinationId)); // Comentariile
         model.put("averageRating", ratingService.calculateAverageRating(destinationId)); // Ratingul mediu
     }
+    @GetMapping("/destinations/{id}")
+    public String showDestinationPage(@PathVariable Long id, ModelMap model) {
+        // Populează modelul cu datele necesare
+        populateModelWithDestinationData(id, model);
+
+        // Alege pagina HTML corespunzătoare bazată pe ID-ul destinației
+        String page;
+        switch (id.intValue()) {
+            case 1:
+                page = "home_subdivisions/mountain"; // Munții Bucegi
+                break;
+            case 2:
+                page = "home_subdivisions/sea"; // Grecia
+                break;
+            case 3:
+                page = "home_subdivisions/city"; // Londra
+                break;
+            case 4:
+                page = "home_subdivisions/jungle"; // O altă locație
+                break;
+            default:
+                throw new IllegalArgumentException("Destinația cu ID-ul " + id + " nu există.");
+        }
+
+        return page;
+    }
+
+
+
 }
 
 

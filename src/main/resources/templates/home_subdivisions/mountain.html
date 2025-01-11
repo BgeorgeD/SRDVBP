@@ -407,7 +407,7 @@
         <form method="post" th:action="@{/submitFeedback}">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-            <input type="hidden" name="destinationId" th:value="${destination.id}" />
+            <input type="hidden" name="destinationId" value="1" />
             <textarea name="text" rows="4" placeholder="Scrie un comentariu..." required></textarea>
             <input type="number" name="stars" min="1" max="5" placeholder="Acordă un rating (1-5)" required />
             <p th:text="'Rating mediu: ' + ${#numbers.formatDecimal(averageRating, 1, 2)} + ' stele'">

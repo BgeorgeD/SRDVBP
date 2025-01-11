@@ -2,41 +2,215 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8">
-    <title>Vacanță Culturală</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vacanță Completă</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* Fundal video */
+        .background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1; /* Să fie în spatele conținutului */
+        }
+
+        header {
+            height: 300px;
+            color: white;
             text-align: center;
-            background: url('/images/city.jpg') no-repeat center center fixed;
-            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5); /* Semi-transparent pentru text */
+            position: relative;
+            z-index: 1; /* Să fie peste video */
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 3em;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1; /* Să fie peste video */
+        }
+
+        .carousel {
+            position: relative;
+            max-width: 100%;
+            margin: 20px auto;
+        }
+
+        .carousel-content {
+            display: none;
+        }
+
+        .carousel-content.active {
+            display: block;
+            text-align: center;
+        }
+
+        .carousel img,
+        .carousel video {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .carousel-controls {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .carousel-controls button {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #007bff;
             color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        h1 {
-            font-size: 150px;
-            font-size: 100px;
+
+        .carousel-controls button:hover {
+            background-color: #0056b3;
         }
-        p {
-            font-size: 50px;
-        }
-        a {
-            display: inline-block;
+
+        .form-section {
             margin-top: 20px;
-            font-size: 30px;
-            color: white;
-            text-decoration: none;
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 20px 40px;
-            border-radius: 8px;
         }
-        a:hover {
-            background-color: rgba(0, 0, 0, 0.8);
+
+        .form-section input,
+        .form-section textarea {
+            width: calc(100% - 20px);
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-section button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .form-section button:hover {
+            background-color: #0056b3;
+        }
+
+        .comments-section {
+            margin-top: 20px;
+        }
+
+        .comment {
+            background: #f9f9f9;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
         }
     </style>
 </head>
 <body>
-<h1>Vacanță Culturală</h1>
-<p>Descoperă orașe istorice, monumente impresionante și tradiții fascinante!</p>
-<a href="/home">Înapoi la Pagina Principală</a>
+<!-- Fundal video -->
+<video class="background-video" autoplay loop muted>
+    <source src="videos/londra.mp4" type="video/mp4">
+    Browser-ul tău nu suportă videoclipuri HTML5.
+</video>
+
+<header>
+    <h1>Londra</h1>
+</header>
+
+<div class="container">
+    <!-- Carousel pentru imagini și videoclipuri -->
+    <div class="carousel">
+        <div class="carousel-content active">
+            <img src="images/londra1.jpg" alt="Imagine 1">
+        </div>
+        <div class="carousel-content">
+            <img src="images/londra2.jpg" alt="Imagine 2">
+        </div>
+        <div class="carousel-content">
+            <img src="images/londra3.jpg" alt="Imagine 3">
+        </div>
+
+        <div class="carousel-controls">
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+        </div>
+    </div>
+
+    <!-- Formular unic pentru comentarii și rating -->
+    <div class="form-section">
+        <form method="post" th:action="@{/submitFeedback}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <input type="hidden" name="destinationId" value="3" />
+            <textarea name="text" rows="4" placeholder="Scrie un comentariu..." required></textarea>
+            <input type="number" name="stars" min="1" max="5" placeholder="Acordă un rating (1-5)" required />
+            <p th:text="'Rating mediu: ' + ${#numbers.formatDecimal(averageRating, 1, 2)} + ' stele'">
+                Rating mediu: 4.25 stele
+            </p>
+
+            <input type="text" name="user" placeholder="Nume utilizator" required />
+            <button type="submit">Trimite Feedback</button>
+        </form>
+
+    </div>
+
+    <!-- Secțiunea de comentarii -->
+    <div class="comments-section">
+        <h2>Comentarii</h2>
+        <div th:each="comment : ${comments}">
+            <div class="comment">
+                <strong>Utilizator:</strong> <span th:text="${comment.username}">Nume utilizator</span><br>
+                <strong>Comentariu:</strong> <span th:text="${comment.text}">Conținut comentariu</span><br>
+                <strong>Data:</strong> <span th:text="${#temporals.format(comment.date, 'yyyy-MM-dd HH:mm')}">Data</span>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const carouselContents = document.querySelectorAll('.carousel-content');
+    let currentIndex = 0;
+
+    document.getElementById('prev').addEventListener('click', () => {
+        carouselContents[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex - 1 + carouselContents.length) % carouselContents.length;
+        carouselContents[currentIndex].classList.add('active');
+    });
+
+    document.getElementById('next').addEventListener('click', () => {
+        carouselContents[currentIndex].classList.remove('active');
+        currentIndex = (currentIndex + 1) % carouselContents.length;
+        carouselContents[currentIndex].classList.add('active');
+    });
+</script>
 </body>
 </html>

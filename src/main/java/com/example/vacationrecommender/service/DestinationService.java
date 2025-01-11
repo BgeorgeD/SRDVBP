@@ -71,6 +71,7 @@ public class DestinationService {
         Optional<Destination> optionalDestination = destinationRepository.findById(id);
         return optionalDestination.orElse(null); // Returnează null dacă destinația nu există
     }
+
 }
 
 

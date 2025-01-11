@@ -33,4 +33,6 @@ public class Destination {
     public void setBudget(Double budget) { this.budget = budget; }
     public String getClimate() { return climate; }
     public void setClimate(String climate) { this.climate = climate; }
+
+
 }
