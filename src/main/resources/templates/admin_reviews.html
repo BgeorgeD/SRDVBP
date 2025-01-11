@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gestionare Recenzii</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 1em;
+      text-align: left;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+<h1>Gestionare Recenzii</h1>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Utilizator</th>
+    <th>Comentariu</th>
+    <th>Data</th>
+    <th>Acțiuni</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="comment : ${comments}">
+    <td th:text="${comment.id}"></td>
+    <td th:text="${comment.username}"></td>
+    <td th:text="${comment.text}"></td>
+    <td th:text="${#temporals.format(comment.date, 'yyyy-MM-dd HH:mm')}"></td>
+    <td>
+      <form method="post" th:action="@{/admin/reviews/delete}">
+        <input type="hidden" name="commentId" th:value="${comment.id}">
+        <button type="submit" class="delete-btn">Șterge</button>
+      </form>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>

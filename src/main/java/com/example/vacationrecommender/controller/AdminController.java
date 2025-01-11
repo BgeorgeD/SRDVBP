@@ -26,6 +26,7 @@ package com.example.vacationrecommender.controller;
 
 import com.example.vacationrecommender.entity.Destination;
 import com.example.vacationrecommender.entity.User;
+import com.example.vacationrecommender.service.CommentService;
 import com.example.vacationrecommender.service.DestinationService;
 import com.example.vacationrecommender.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +40,13 @@ public class AdminController {
 
     private final DestinationService destinationService;
     private final UserService userService;
+    private CommentService commentService;
 
     @Autowired
-    public AdminController(DestinationService destinationService, UserService userService) {
+    public AdminController(DestinationService destinationService, UserService userService, CommentService commentService) {
         this.destinationService = destinationService;
         this.userService = userService;
+        this.commentService = commentService;
     }
 
     // Dashboard Admin
@@ -91,6 +94,20 @@ public class AdminController {
         userService.deleteUserById(id);
         return "redirect:/admin/users";
     }
+    // Vizualizează toate comentariile
+    @GetMapping("/reviews")
+    public String showReviews(Model model) {
+        model.addAttribute("comments", commentService.getAllComments());
+        return "admin_reviews"; // Pagina HTML pentru gestionarea recenziilor
+    }
+
+    @PostMapping("/reviews/delete")
+    public String deleteReview(@RequestParam("commentId") Long commentId) {
+        commentService.deleteCommentById(commentId);
+        return "redirect:/admin/reviews"; // Redirecționează la pagina de recenzii
+    }
+
+
 }
 
 

@@ -24,6 +24,7 @@ public class CommentService {
     }
 
 
+
     public void addComment(Long destinationId, String text, String username) {
         Comment comment = new Comment();
         comment.setText(text);
@@ -39,11 +40,22 @@ public class CommentService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         comment.setFormattedDate(LocalDateTime.now().format(formatter));
     }
+    // Metodă pentru a returna toate comentariile
+    public List<Comment> getAllComments() {
+        return commentRepository.findAll();
+    }
+
+    // Metodă pentru a șterge un comentariu după ID
+    public void deleteCommentById(Long commentId) {
+        commentRepository.deleteById(commentId);
+    }
+
 
     public List<Comment> getCommentsByDestination(Long destinationId) {
         return commentRepository.findByDestinationId(destinationId);}
 
 }
+
 
 
 
