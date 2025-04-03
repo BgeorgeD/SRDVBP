@@ -88,6 +88,12 @@ public class HomeController {
         populateModelWithDestinationData(jungleDestinationId, model);
         return "home_subdivisions/jungle";
     }
+    @GetMapping("/ai")
+    public String showAiRecommendationPage() {
+        return "ai_recommendation";
+    }
+
+
 
 
 
@@ -104,6 +110,10 @@ public class HomeController {
         model.put("comments", commentService.getCommentsByDestination(destinationId)); // Comentariile
         model.put("averageRating", ratingService.calculateAverageRating(destinationId)); // Ratingul mediu
     }
+
+
+
+
     @GetMapping("/destinations/{id}")
     public String showDestinationPage(@PathVariable Long id, ModelMap model) {
         // Populează modelul cu datele necesare
@@ -127,6 +137,8 @@ public class HomeController {
             default:
                 throw new IllegalArgumentException("Destinația cu ID-ul " + id + " nu există.");
         }
+
+
 
         return page;
     }

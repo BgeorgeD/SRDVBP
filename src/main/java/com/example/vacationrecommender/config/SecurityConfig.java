@@ -86,11 +86,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/ai/**") // permite doar pe ruta asta fără token si este necesara pentru a continua functionalitatea AI
+                )
 
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/index","/login", "/css/**", "/js/**" ,"/images/**","/videos/**" ).permitAll()
+                        .requestMatchers("/index","/login", "/css/**", "/js/**" ,"/images/**","/videos/**","/api/ai/**" ).permitAll()
                         .anyRequest().authenticated()
                 )
 

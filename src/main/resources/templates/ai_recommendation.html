@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <title>Recomandare Vacanță AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f8fb;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 600px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+
+        input, select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e6f7ff;
+            border-left: 4px solid #007bff;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Recomandare Vacanță AI</h1>
+    <form id="aiForm">
+        <label for="vacationType">Tip vacanță:</label>
+        <select id="vacationType" name="vacationType" required>
+            <option value="" disabled selected>Alege un tip</option>
+            <option value="montana">Montană</option>
+            <option value="mare">La mare</option>
+            <option value="culturala">Culturală</option>
+            <option value="natura">În natură</option>
+        </select>
+
+        <label for="budget">Buget estimat (€):</label>
+        <input type="number" id="budget" name="budget" required>
+
+        <label for="preferences">Preferințe suplimentare:</label>
+        <textarea id="preferences" name="preferences" rows="3" placeholder="Ex: liniște, trasee ușoare, peisaje"></textarea>
+
+        <button type="submit">Obține Recomandare</button>
+    </form>
+
+    <div id="result" class="result"></div>
+</div>
+
+<script>
+    document.getElementById('aiForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const vacationType = document.getElementById('vacationType').value;
+        const budget = document.getElementById('budget').value;
+        const preferences = document.getElementById('preferences').value;
+
+        const data = {
+            tip_vacanta: vacationType,
+            buget: parseInt(budget),
+            preferinte: preferences.split(',').map(p => p.trim())
+        };
+
+        fetch('/api/ai/recommend', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Eroare la server!");
+                }
+                return response.json();
+            })
+            .then(rezultate => {
+                const resultDiv = document.getElementById('result');
+                resultDiv.style.display = 'block';
+
+                if (rezultate.length === 0) {
+                    resultDiv.innerHTML = "<em>Nicio recomandare găsită.</em>";
+                    return;
+                }
+
+                let html = "<h3>Recomandări:</h3><ul>";
+                rezultate.forEach(item => {
+                    html += `<li><strong>${item.nume}</strong> – scor: ${item.scor}</li>`;
+                });
+                html += "</ul>";
+                resultDiv.innerHTML = html;
+            })
+            .catch(error => {
+                alert("Ceva n-a mers bine. Verifică dacă serverul e pornit.");
+                console.error('Eroare:', error);
+            });
+    });
+</script>
+</body>
+</html>
