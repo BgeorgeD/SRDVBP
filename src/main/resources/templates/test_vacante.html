@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Test Vacanțe</title>
+  <style>
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+    .card { background: white; padding: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-radius: 10px; }
+    .card img { width: 100%; height: 180px; object-fit: cover; border-radius: 5px; }
+  </style>
+</head>
+<body>
+<h1>Vacanțe cu imagini generate automat</h1>
+<div class="grid">
+  <div class="card" th:each="v : ${vacante}">
+    <img th:src="${v.imageUrl}" alt="Imagine">
+    <h3 th:text="${v.destinatie}">Destinație</h3>
+    <p th:text="${v.descriere}">Descriere</p>
+    <p><strong th:text="${v.tip}">Tip</strong> – <span th:text="${v.pret + ' €'}">Pret</span></p>
+  </div>
+</div>
+</body>
+</html>

@@ -31,7 +31,7 @@ public class HomeController {
         return "home_subdivisions/jungle";
     }
 }*/
-package com.example.vacationrecommender.controller;
+/*package com.example.vacationrecommender.controller;
 
 import ch.qos.logback.core.model.Model;
 import com.example.vacationrecommender.service.CommentService;
@@ -41,6 +41,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class HomeController {
@@ -97,10 +98,11 @@ public class HomeController {
 
 
 
+
     /**
      * Metodă auxiliară pentru a popula modelul cu datele necesare.
      */
-    private void populateModelWithDestinationData(Long destinationId, ModelMap model) {
+    /*private void populateModelWithDestinationData(Long destinationId, ModelMap model) {
         var destination = destinationService.findDestinationById(destinationId);
         if (destination == null) {
             throw new IllegalArgumentException("Destinația cu ID-ul " + destinationId + " nu există.");
@@ -145,6 +147,121 @@ public class HomeController {
 
 
 
+}*/
+
+package com.example.vacationrecommender.controller;
+
+import com.example.vacationrecommender.dto.VacationDTO;
+import com.example.vacationrecommender.service.ApiDestinationService;
+import com.example.vacationrecommender.service.CommentService;
+import com.example.vacationrecommender.service.RatingService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Controller
+public class HomeController {
+
+    private final ApiDestinationService apiDestinationService;
+    private final CommentService commentService;
+    private final RatingService ratingService;
+
+    public HomeController(ApiDestinationService apiDestinationService,
+                          CommentService commentService,
+                          RatingService ratingService) {
+        this.apiDestinationService = apiDestinationService;
+        this.commentService = commentService;
+        this.ratingService = ratingService;
+    }
+
+
+
+    @GetMapping("/home")
+    public String showHomePage() {
+        System.out.println("Accessing home page...");
+        return "home";
+    }
+
+    @GetMapping("/choice_page")
+    public String showchoicepage() {
+        System.out.println("Accessing choice page...");
+        return "choice_page";
+    }
+
+    @GetMapping("/all_vacation_page")
+    public String showallvacationpage() {
+        System.out.println("Accessing vacation page...");
+        return "all_vacation_page";
+    }
+
+    @GetMapping("/mountain")
+    public String showMountainPage(ModelMap model) {
+        var hotels = apiDestinationService.getDestinationsByQuery("mountain");
+        model.put("hotels", hotels);
+        return "home_subdivisions/mountain";
+    }
+
+    @GetMapping("/sea")
+    public String showSeaPage(ModelMap model) {
+        var hotels = apiDestinationService.getDestinationsByQuery("sea");
+        model.put("hotels", hotels);
+        return "home_subdivisions/sea";
+    }
+
+    @GetMapping("/city")
+    public String showCityPage(ModelMap model) {
+        var hotels = apiDestinationService.getDestinationsByQuery("city");
+        model.put("hotels", hotels);
+        return "home_subdivisions/city";
+    }
+
+    @GetMapping("/jungle")
+    public String showJunglePage(ModelMap model) {
+        var hotels = apiDestinationService.getDestinationsByQuery("nature");
+        model.put("hotels", hotels);
+        return "home_subdivisions/jungle";
+    }
+
+    @GetMapping("/ai")
+    public String showAiRecommendationPage() {
+        return "ai_recommendation";
+    }
+
+
+
+    @GetMapping("/destinations/{id}")
+    public String showDestinationPage(@PathVariable Long id, ModelMap model) {
+        // Acesta rămâne dacă vrei să păstrezi rutele bazate pe ID
+        // Recomand să le folosești doar pe cele bazate pe query (de sus)
+
+        var hotels = apiDestinationService.getDestinationsByQuery("sea"); // fallback
+        model.put("hotels", hotels);
+
+        String page;
+        switch (id.intValue()) {
+            case 1:
+                page = "home_subdivisions/mountain";
+                break;
+            case 2:
+                page = "home_subdivisions/sea";
+                break;
+            case 3:
+                page = "home_subdivisions/city";
+                break;
+            case 4:
+                page = "home_subdivisions/jungle";
+                break;
+            default:
+                throw new IllegalArgumentException("Destinația cu ID-ul " + id + " nu există.");
+        }
+
+        return page;
+    }
 }
+
 
 

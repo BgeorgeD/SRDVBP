@@ -99,7 +99,7 @@ public class SecurityConfig {
 
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .defaultSuccessUrl("/home", true) // Redirect după login reușit
+                        .defaultSuccessUrl("/choice_page", true) // Redirect după login reușit
                         .permitAll()
                 )
 
