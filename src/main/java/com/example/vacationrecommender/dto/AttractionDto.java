@@ -9,11 +9,12 @@ public class AttractionDto {
 
 
     // Constructori
-    public AttractionDto(String name, double lat, double lon, String kinds) {
+    public AttractionDto(String name, double lat, double lon, String kinds, String xid) {
         this.name = name;
         this.lat = lat;
         this.lon = lon;
         this.kinds = kinds;
+        this.xid = xid;
     }
 
     public AttractionDto() {}

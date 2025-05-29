@@ -139,6 +139,45 @@
       transform: rotate(360deg);
     }
 
+    .detail-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: white;
+      max-width: 600px;
+      width: 90%;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+      z-index: 9999;
+      text-align: center;
+    }
+
+    .detail-popup img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin: 10px 0;
+    }
+
+    .detail-popup .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .detail-popup p {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #333;
+    }
+
+
 
 
 
@@ -373,28 +412,36 @@
   });
 
   function showDetailPopup(title, text, imgUrl) {
+    // Dacă există deja un popup, îl ștergem
+    const existingPopup = document.querySelector(".detail-popup");
+    if (existingPopup) existingPopup.remove();
+
     const popup = document.createElement("div");
     popup.className = "detail-popup";
     popup.innerHTML = `
-    <h3>${title}</h3>
-    <img src="${imgUrl}" alt="${title}" />
-    <p>${text}</p>
-    <button onclick="this.parentElement.remove()">Închide</button>
+    <div class="popup-content">
+      <button class="close-btn" onclick="this.parentElement.parentElement.remove()">×</button>
+      <h2>${title}</h2>
+      <img src="${imgUrl}" alt="${title}" />
+      <p>${text}</p>
+    </div>
   `;
     document.body.appendChild(popup);
   }
 
 
+
   function openAttractionDetails(xid) {
-    fetch(`/api/attraction/details?xid=${xid}`)
+    fetch(`/api/attractions/details?xid=${xid}`)
             .then(res => res.json())
             .then(data => {
+              console.log("DETALII:", data); // vezi exact ce primești
               const name = data.name || "Atracție";
               const desc = data.wikipedia_extracts?.text || "Descriere indisponibilă";
-              const img = data.preview?.source || "images/fallback.jpg";
-
+              const img = data.preview?.source || "images/no-image.jpg";
               showDetailPopup(name, desc, img);
             });
+
   }
 
 
