@@ -156,11 +156,13 @@ import com.example.vacationrecommender.service.ApiDestinationService;
 import com.example.vacationrecommender.service.CommentService;
 import com.example.vacationrecommender.service.RatingService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import com.example.vacationrecommender.service.VacationService;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 @Controller
@@ -170,9 +172,13 @@ public class HomeController {
     private final CommentService commentService;
     private final RatingService ratingService;
 
+
+
+
     public HomeController(ApiDestinationService apiDestinationService,
                           CommentService commentService,
-                          RatingService ratingService) {
+                          RatingService ratingService
+                          ) {
         this.apiDestinationService = apiDestinationService;
         this.commentService = commentService;
         this.ratingService = ratingService;
@@ -192,11 +198,13 @@ public class HomeController {
         return "choice_page";
     }
 
-    @GetMapping("/all_vacation_page")
-    public String showallvacationpage() {
-        System.out.println("Accessing vacation page...");
-        return "all_vacation_page";
+    @GetMapping("/vacante")
+    public String showVacantePage() {
+        return "vacante";
     }
+
+
+
 
     @GetMapping("/mountain")
     public String showMountainPage(ModelMap model) {
