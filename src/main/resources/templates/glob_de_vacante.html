@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Glob de Vacanțe</title>
+    <style>
+        body, html { margin: 0; height: 100%; overflow: hidden; background: #000; }
+        #globeViz { width: 100%; height: 100%; }
+        .overlay {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 0 16px;
+        }
+        .card {
+            min-width: 220px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            padding: 12px;
+            backdrop-filter: blur(4px);
+        }
+        .card img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; }
+        .card h3 { margin: 8px 0 4px; font-size: 1.1em; }
+        .card p { font-size: 0.9em; color: #444; }
+        #loading {
+            position: absolute;
+            top: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            font-size: 1.2em;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div id="globeViz"></div>
+<div id="loading">Se încarcă...</div>
+<div id="results" class="overlay"></div>
+
+<!-- 1) Încarcă Three.js -->
+<script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
+<!-- 2) Încarcă Globe.gl -->
+<script src="https://unpkg.com/globe.gl"></script>
+<!-- 3) Logică -->
+<script>
+    // 1. Referințe DOM
+    const globeEl   = document.getElementById('globeViz');
+    const loadingEl = document.getElementById('loading');
+    const resultsEl = document.getElementById('results');
+
+    // 2. Instanțiere glob
+    const globe = Globe()(globeEl)
+        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
+        .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png');
+
+    // 3. Lumină și rotație
+    globe.scene().add(new THREE.AmbientLight(0xffffff, 0.7));
+    globe.controls().autoRotate      = true;
+    globe.controls().autoRotateSpeed = 0.3;
+
+    // 4. TEST STATIC: un marker roșu mare la Paris, și log
+    const testPoints = [{ lat: 48.85, lng: 2.35, size: 2, color: 'red', data: {} }];
+    globe
+        .pointsData(testPoints)
+        .pointLat(d => d.lat)
+        .pointLng(d => d.lng)
+        .pointAltitude(0.05)
+        .pointRadius(d => d.size);
+    console.log('🔴 Marker static setat:', globe.pointsData().length);
+
+    // 5. Funcția de afișare carduri
+    function showCard(v) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+        <img src="${v.imageUrl}" alt="${v.name}"/>
+        <h3>${v.name}</h3>
+        <p>${v.description}</p>
+      `;
+        resultsEl.appendChild(card);
+    }
+
+    // 6. Handler click pe glob
+    globe.onGlobeClick(async ({ lat, lng }) => {
+        globe.controls().autoRotate = false;
+        globe.pointOfView({ lat, lng, altitude: 0.8 }, 1000);
+
+        loadingEl.style.display = 'block';
+        resultsEl.innerHTML = '';
+        globe.pointsData([]); // curăță markerii anteriori
+
+        try {
+            const resp = await fetch(`/vacations/by-coordinates?lat=${lat}&lon=${lng}&radius=5000`);
+            const list = await resp.json();
+            loadingEl.style.display = 'none';
+
+            console.log('📥 Date din backend:', list);
+
+            if (!list.length) {
+                resultsEl.innerHTML = '<div style="color:white">Nici o destinație găsită.</div>';
+                return;
+            }
+
+            // generează markerii
+            const points = list.map(v => ({
+                lat: v.lat,
+                lng: v.lng,
+                size: 1.5,
+                color: 'orange',
+                data: v
+            }));
+
+            // ...după fetch și pointsData...
+            globe
+                .pointsData(points)
+                .pointLat(d => d.lat)
+                .pointLng(d => d.lng)
+                .pointColor(d => d.color)
+                .pointAltitude(d => 0.02)
+                .pointRadius(d => 0.01 * d.size);
+
+
+            console.log('📍 Markerii dinamici setați:', globe.pointsData().length);
+
+            globe.onPointClick(d => {
+                globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: 0.5 }, 1000);
+                resultsEl.innerHTML = '';
+                showCard(d.data);
+            });
+
+
+
+        } catch (e) {
+            console.error('‼️ Eroare:', e);
+            loadingEl.textContent = 'Eroare la încărcare.';
+        }
+    });
+
+</script>
+</body>
+</html>

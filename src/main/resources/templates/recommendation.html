@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Recomandări Vacanță AI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(to right, #e0f7fa, #e1f5fe);
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+        }
+
+        .price-badge {
+            background-color: #007BFF;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: bold;
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        h1 {
+            font-weight: 700;
+            color: #003366;
+        }
+
+        .input-group input {
+            border-radius: 30px 0 0 30px;
+        }
+
+        .input-group .btn {
+            border-radius: 0 30px 30px 0;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .value {
+            font-weight: 400;
+            color: #555;
+        }
+
+        .empty-text {
+            color: #666;
+            font-style: italic;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+<div class="container text-center">
+    <h1 class="mb-4">Recomandări de Vacanță AI</h1>
+
+    <form method="post" th:action="@{/api/ai/recommend}" class="mb-5">
+        <div class="input-group w-75 mx-auto">
+            <input type="text" name="text" class="form-control" placeholder="Ex: Vreau o vacanță la mare, relaxare și soare..." required>
+            <button type="submit" class="btn btn-primary">Trimite</button>
+        </div>
+    </form>
+
+    <div class="row" th:if="${recomandari != null and #lists.size(recomandari) > 0}">
+        <div class="col-md-4 mb-4" th:each="recomandare : ${recomandari}">
+
+            <div class="card p-4 h-100">
+
+                <img th:src="${recomandare.imagine}" alt="Imagine vacanță"
+                     style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 10px;">
+
+
+                <h5 class="fw-bold mb-3" th:text="${recomandare.numePachet}">Nume Pachet</h5>
+                <p><span class="label">Destinație:</span> <span class="value" th:text="${recomandare.destinatie}"></span></p>
+                <p><span class="label">Durată:</span> <span class="value" th:text="${recomandare.durata}"></span></p>
+                <p><span class="label">Hotel:</span> <span class="value" th:text="${recomandare.hotel}"></span></p>
+                <p><span class="label">Plecare:</span> <span class="value" th:text="${recomandare.orasPlecare}"></span></p>
+                <p><span class="label">Zboruri:</span> <span class="value" th:text="${recomandare.zboruri}"></span></p>
+                <p><span class="label">Mese incluse:</span> <span class="value" th:text="${recomandare.mese}"></span></p>
+                <p><span class="label">Tip:</span> <span class="value" th:text="${recomandare.tipPachet}"></span></p>
+                <p><span class="label">Atracții:</span> <span class="value" th:text="${recomandare.atractii}"></span></p>
+                <div class="price-badge" th:text="${recomandare.pret + ' EUR'}"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <div th:if="${recomandari == null or #lists.isEmpty(recomandari)}" class="empty-text">
+        <p>Nu există recomandări disponibile pentru această cerere.</p>
+    </div>
+</div>
+</body>
+</html>
+>

@@ -31,4 +31,17 @@ public class OpenTripMapController {
         return ResponseEntity.ok(details);
     }
 
+    @GetMapping("/bbox")
+    public ResponseEntity<List<AttractionDto>> getAttractionsByBbox(
+            @RequestParam("lon_min") double lonMin,
+            @RequestParam("lat_min") double latMin,
+            @RequestParam("lon_max") double lonMax,
+            @RequestParam("lat_max") double latMax) {
+
+        List<AttractionDto> results = service.getAttractionsByBbox(lonMin, latMin, lonMax, latMax);
+        return ResponseEntity.ok(results);
+    }
+
+
+
 }
