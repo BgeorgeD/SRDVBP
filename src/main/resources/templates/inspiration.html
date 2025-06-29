@@ -26,6 +26,28 @@
             margin-bottom: 2rem;
         }
 
+        .vacation-info {
+            padding: 10px;
+            background: white;
+        }
+
+        .vacation-title, .vacation-price {
+            position: static;
+            background: none;
+            color: #333;
+            padding: 0;
+            max-width: 75%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .vacation-card {
+            position: relative;
+        }
+
+
+
         .vacation-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -43,6 +65,16 @@
         .vacation-card:hover {
             transform: scale(1.02);
         }
+
+        .vacation-section {
+            margin-bottom: 3rem;
+        }
+        .vacation-section h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
 
         .vacation-card img {
             width: 100%;
@@ -62,6 +94,24 @@
             font-weight: 600;
         }
 
+        .breadcrumb {
+            font-size: 1.5rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .breadcrumb a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+
+
+
         .vacation-price {
             position: absolute;
             bottom: 12px;
@@ -76,32 +126,67 @@
 </head>
 <body>
 <h2>Destinațiile de vacanță preferate ale clienților noștri</h2>
+
+<nav class="breadcrumb">
+    <a href="http://localhost:8080/choice_page"> Acasă</a> / <span>Vacanțe interesante</span>
+</nav>
+
+
+<!--
+<section class="vacation-section">
+    <h3>🏖️ Top 5 vacanțe la mare</h3>
+    <div class="vacation-grid" id="topMare"></div>
+</section>
+-->
+
+
+<section class="vacation-section">
+    <h3>💸 Top 5 vacanțe de buget</h3>
+    <div class="vacation-grid" id="topBuget"></div>
+</section>
+
+<section class="vacation-section">
+    <h3>🏰 Top 5 vacanțe de lux</h3>
+    <div class="vacation-grid" id="topLux"></div>
+</section>
+
+
+
 <p class="subtitle">Cele mai bune oferte pentru cele mai populare destinații de vacanță.</p>
 
-<div class="vacation-grid" id="vacationGrid">
-    <!-- Cardurile vor fi injectate din JS -->
-</div>
+
 
 <script>
-    fetch("http://localhost:5000/api/all-vacations") // portul trebuie să fie corect
-        .then(res => res.json())
-        .then(data => {
-            const container = document.getElementById("vacationGrid");
 
-            data.forEach(v => {
-                const card = document.createElement("div");
-                card.className = "vacation-card";
-                card.innerHTML = `
-                    <img src="${v.imagine}" alt="${v.destinatie}">
-                    <div class="vacation-title">${v.numePachet}</div>
-                    <div class="vacation-price">${v.pret ? v.pret + ' EUR' : 'Preț indisponibil'}</div>
+    function loadTop(uri, containerId) {
+        fetch(`http://localhost:5000/api/top/${uri}`)
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById(containerId);
+                container.innerHTML = "";
+                data.forEach(v => {
+                    const card = document.createElement("div");
+                    card.className = "vacation-card";
+                    card.innerHTML = `
+                    <div class="vacation-card">
+
+    <img src="${v.imagine}" alt="${v.destinatie}">
+    <div class="vacation-info">
+        <div class="vacation-title">${v.numePachet}</div>
+        <div class="vacation-price">${v.pret ? v.pret + ' EUR' : 'Preț indisponibil'}</div>
+    </div>
+</div>
+
                 `;
-                container.appendChild(card);
-            });
-        })
-        .catch(err => {
-            console.error("Eroare la încărcarea datelor:", err);
-        });
+                    container.appendChild(card);
+                });
+            })
+            .catch(err => console.error("Eroare la top:", uri, err));
+    }
+
+    loadTop("mare", "topMare");
+    loadTop("buget", "topBuget");
+    loadTop("lux", "topLux");
 </script>
 
 
