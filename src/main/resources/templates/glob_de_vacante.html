@@ -53,11 +53,66 @@
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0,0,0,0.4);
         }
+
+        .breadcrumb-wrapper {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+        }
+
+        .breadcrumb {
+            display: flex;
+            gap: 10px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            border-radius: 12px;
+            color: #fff;
+            list-style: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+            font-size: 1rem;
+        }
+
+        .breadcrumb-item a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .breadcrumb-item.active {
+            font-weight: bold;
+            color: #ccc;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: "›";
+            padding: 0 6px;
+            color: #aaa;
+        }
+
+
     </style>
 </head>
 <body>
+
+
+<div class="breadcrumb-wrapper">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/choice_page">Acasă</a></li>
+            <li class="breadcrumb-item"><a href="/home">Jocuri interesante AI</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Explorează Globul</li>
+        </ol>
+    </nav>
+</div>
+
+
+
 <div id="cesiumContainer"></div>
 <div id="results" class="overlay"></div>
+
+
 
 
 <div id="popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);

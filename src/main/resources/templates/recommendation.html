@@ -6,6 +6,24 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 
     <style>
+
+        #bg-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            object-fit: cover;
+            opacity: 1;
+        }
+
+        .content {
+            position: relative;
+            z-index: 1;
+        }
+
+
         body {
             background: linear-gradient(to right, #e0f7fa, #e1f5fe);
             font-family: 'Segoe UI', sans-serif;
@@ -61,14 +79,55 @@
             color: #555;
         }
 
+        .breadcrumb {
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            padding: 10px 20px;
+            backdrop-filter: blur(5px);
+        }
+
+
         .empty-text {
             color: #666;
             font-style: italic;
-            margin-top: 30px;
+            margin-top: 150px;
+            text-align: center;
+            font-size: 1.1rem;
         }
+
+
+        .btn-primary {
+            border-radius: 25px;
+            padding: 10px 20px;
+            font-weight: bold;
+        }
+
     </style>
 </head>
 <body>
+
+<div class="content">
+
+    <nav aria-label="breadcrumb" class="pt-4">
+        <ol class="breadcrumb justify-content-center bg-transparent">
+            <li class="breadcrumb-item">
+                <a href="/choice_page" class="text-dark fw-bold">Acasă</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="/home" class="text-dark fw-bold">Jocuri interesante AI</a>
+            </li>
+            <li class="breadcrumb-item active text-dark" aria-current="page">Recomandări</li>
+        </ol>
+    </nav>
+<!-- Video de fundal -->
+<video autoplay muted loop id="bg-video">
+    <source src="/videos/home.mp4" type="video/mp4">
+    Browserul tău nu suportă video HTML5.
+</video>
+
+<!-- Overlay pentru contrast -->
+<div class="overlay"></div>
+
 <div class="container text-center">
     <h1 class="mb-4">Recomandări de Vacanță AI</h1>
 
@@ -80,14 +139,10 @@
     </form>
 
     <div class="row" th:if="${recomandari != null and #lists.size(recomandari) > 0}">
-        <div class="col-md-4 mb-4" th:each="recomandare : ${recomandari}">
-
+        <div class="col-md-4 mb-4" th:each="recomandare, iterStat : ${recomandari}">
             <div class="card p-4 h-100">
-
                 <img th:src="${recomandare.imagine}" alt="Imagine vacanță"
                      style="width: 100%; height: 200px; object-fit: cover; border-radius: 10px; margin-bottom: 10px;">
-
-
                 <h5 class="fw-bold mb-3" th:text="${recomandare.numePachet}">Nume Pachet</h5>
                 <p><span class="label">Destinație:</span> <span class="value" th:text="${recomandare.destinatie}"></span></p>
                 <p><span class="label">Durată:</span> <span class="value" th:text="${recomandare.durata}"></span></p>
@@ -98,14 +153,21 @@
                 <p><span class="label">Tip:</span> <span class="value" th:text="${recomandare.tipPachet}"></span></p>
                 <p><span class="label">Atracții:</span> <span class="value" th:text="${recomandare.atractii}"></span></p>
                 <div class="price-badge" th:text="${recomandare.pret + ' EUR'}"></div>
+                <a th:href="@{'/api/ai/rezerva/' + ${iterStat.index}}" class="btn btn-primary mt-3 d-block">Rezervă Acum!</a>
+
             </div>
-
         </div>
+
+
+    </div>
     </div>
 
-    <div th:if="${recomandari == null or #lists.isEmpty(recomandari)}" class="empty-text">
-        <p>Nu există recomandări disponibile pentru această cerere.</p>
+    <div th:if="${recomandari == null or #lists.isEmpty(recomandari)}" class="empty-text mt-5">
+        <p class="text-center">Nu există recomandări disponibile pentru această cerere.</p>
     </div>
+
+
+</div>
 </div>
 </body>
 </html>
