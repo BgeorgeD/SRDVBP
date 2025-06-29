@@ -60,6 +60,8 @@ public class GlobController {
     }
 
 
+
+
     // În GlobController.java
 
     @GetMapping("/details/{xid}")

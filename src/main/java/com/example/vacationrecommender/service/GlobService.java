@@ -4,6 +4,7 @@ import com.example.vacationrecommender.dto.AttractionDto;
 import com.example.vacationrecommender.dto.GlobDTO;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@Service
+/*@Service
 public class GlobService {
 
     private final OpenTripMapService openTripMapService;
@@ -100,4 +101,67 @@ public class GlobService {
         return openTripMapService.getAttractionDetailsByXid(xid);
     }
 
+}*/
+
+@Service
+@RequiredArgsConstructor
+public class GlobService {
+
+    private final OpenTripMapService openTripMapService;
+    private final PixabayService pixabayService;
+
+    /**
+     * Metoda pentru afișare pe hartă pe baza unui bounding box.
+     */
+    public List<GlobDTO> findByBoundingBox(double latMin, double latMax, double lonMin, double lonMax) {
+        List<AttractionDto> attractions = openTripMapService.getAttractionsByBbox(lonMin, latMin, lonMax, latMax);
+        List<GlobDTO> results = new ArrayList<>();
+        int pixabayCalls = 0;
+        final int MAX_PIXABAY_CALLS = 5;
+
+        for (AttractionDto attr : attractions) {
+            String imageUrl = "/images/default-hotel.jpg";
+
+            if (pixabayCalls < MAX_PIXABAY_CALLS) {
+                imageUrl = pixabayService.getImageUrlForHotel(attr.getName());
+                pixabayCalls++;
+            }
+
+            GlobDTO dto = new GlobDTO(
+                    attr.getXid(),
+                    attr.getName(),
+                    "Atracție turistică de tip: " + attr.getKinds(),
+                    imageUrl,
+                    0.0, // poți înlocui cu calculul distanței reale dacă vrei
+                    attr.getLat(),
+                    attr.getLon()
+            );
+
+            results.add(dto);
+        }
+
+        return results;
+    }
+
+    /**
+     * Metodă pentru click pe glob – calculează bounding box în jurul unui punct central.
+     */
+    public List<GlobDTO> findNear(double lat, double lon, int radius) {
+        // Convertim radiusul într-un offset aproximativ pentru lat/lon
+        double offset = 0.2; // echivalent cu ~20-25 km (poți ajusta)
+        double latMin = lat - offset;
+        double latMax = lat + offset;
+        double lonMin = lon - offset;
+        double lonMax = lon + offset;
+
+        return findByBoundingBox(latMin, latMax, lonMin, lonMax);
+    }
+
+    /**
+     * Detalii extinse despre o atracție (pentru popup).
+     */
+    public Map<String, Object> getDetailsByXid(String xid) {
+        return openTripMapService.getAttractionDetailsByXid(xid);
+    }
 }
+
