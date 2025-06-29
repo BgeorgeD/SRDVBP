@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <title>Recomandări Vacanțe</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
 
 
 
@@ -15,11 +18,14 @@
       padding: 0;
       height: 100%;
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: transparent;
     }
 
+
+
+
     header {
-      background: #0074e4;
+      background: transparent;
       color: white;
       padding: 15px 20px;
       display: flex;
@@ -39,17 +45,19 @@
 
     aside {
       width: 280px;
-      background: white;
+      background: transparent;
       padding: 20px;
       box-shadow: 1px 0 4px rgba(0,0,0,0.1);
       box-sizing: border-box;
     }
 
     .filters h3 {
+      color: white;
       margin-top: 0;
     }
 
     .filters label {
+      color: white;
       display: block;
       margin-bottom: 15px;
     }
@@ -110,34 +118,44 @@
       vertical-align: middle;
     }
 
-
-    .reload-icon {
-
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      background: white;
-      border-radius: 50%;
-      padding: 8px;
-      box-shadow: 0 0 6px rgba(0,0,0,0.2);
-      cursor: pointer;
-      z-index: 1000;
-      transition: transform 0.3s ease;
+    .breadcrumb {
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: rgba(255, 255, 255, 0.85);
+      font-family: 'Segoe UI', sans-serif;
+      letter-spacing: 0.3px;
     }
 
-    .reload-icon img {
-      width: 24px;
-      height: 24px;
+    .breadcrumb a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+
+    .breadcrumb a:hover {
+      color: #cce4ff;
+    }
+
+    .breadcrumb span {
+      font-weight: 400;
+      opacity: 0.7;
     }
 
 
-    .reload-icon:hover {
-      background: #f0f0f0;
-    }
 
-    .reload-icon.spin {
-      transform: rotate(360deg);
-    }
+
+
+
+
+
+
+
+
+
+
 
     .detail-popup {
       position: fixed;
@@ -171,6 +189,19 @@
       cursor: pointer;
     }
 
+
+    #particles-js {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      top: 0;
+      left: 0;
+      background-color: #1a0033; /* albastru închis spre mov */
+    }
+
+
+
     .detail-popup p {
       margin-top: 10px;
       font-size: 16px;
@@ -192,6 +223,7 @@
 
 
 
+
     #map {
       width: 100%;
       height: 100%;
@@ -202,8 +234,20 @@
 </head>
 <body>
 
+<div id="particles-js"></div>
+
+
 <header>
   <div><strong>Vacanțe Recomandate</strong></div>
+
+  <nav class="breadcrumb">
+    <a href="http://localhost:8080/choice_page">Acasă</a>
+    <span>/</span>
+    <span>Harta orașelor</span>
+  </nav>
+
+
+
   <input list="locatii" id="searchInput" placeholder="Caută o destinație..." />
   <datalist id="locatii">
     <option value="Baia Mare">
@@ -223,26 +267,7 @@
   <aside>
     <div class="filters">
       <h3>Filtre</h3>
-      <label>
-        Tip vacanță:
-        <select id="tipVacanta">
-          <option value="">Toate</option>
-          <option value="mare">Mare</option>
-          <option value="munte">Munte</option>
-          <option value="natura">Natură</option>
-          <option value="cultural">Cultural</option>
-        </select>
-      </label>
-      <label>
-        Țară:
-        <select id="tara">
-          <option value="">Toate</option>
-          <option value="Grecia">Grecia</option>
-          <option value="România">România</option>
-          <option value="Italia">Italia</option>
-          <option value="Marea Britanie">Marea Britanie</option>
-        </select>
-      </label>
+
       <label>
         Buget maxim: <span id="bugetValue">1000</span> €
         <input type="range" id="buget" min="100" max="3000" step="100" value="1000" />
@@ -257,28 +282,21 @@
 
   <div class="map-container">
     <div id="map"></div>
-    <div class="reload-icon" onclick="reloadAttractions()" title="Reîncarcă atracțiile">
-      <img src="images/iconreload.png" alt="Reîncarcă" />
-    </div>
     <div id="listContainer" style="display:none; padding: 20px;"></div>
     <div class="map-legend">
       <strong>Legendă:</strong><br>
-      <div class="legend-entry" data-kind="main" style="color: blue;">
-        <span class="legend-color" style="background: blue;"></span> Oraș selectat
+      <div class="legend">
+        <span style="color: blue; cursor: pointer;" data-type="selected">⬤</span> Oraș selectat<br>
+        <span style="color: red; cursor: pointer;" data-type="general">⬤</span> Atracție generală<br>
+        <span style="color: green; cursor: pointer;" data-type="museum">⬤</span> Muzeu<br>
+        <span style="color: orange; cursor: pointer;" data-type="architecture">⬤</span> Arhitectură<br>
+        <span style="color: purple; cursor: pointer;" data-type="nature">⬤</span> Natură / Parcuri<br>
+        <span style="color: lightgray; cursor: pointer;" data-type="religious">⬤</span> Lăcaș religios<br>
+        <span style="color: brown; cursor: pointer;" data-type="mountain">⬤</span> Vârf munte<br>
+        <span style="color: yellow; cursor: pointer;" data-type="monument">⬤</span> Monument / Statuie<br>
       </div>
-      <div class="legend-entry" data-kind="general" style="color: red;">
-        <span class="legend-color" style="background: red;"></span> Atracție generală
-      </div>
-      <div class="legend-entry" data-kind="museum" style="color: green;">
-        <span class="legend-color" style="background: green;"></span> Muzeu
-      </div>
-      <div class="legend-entry" data-kind="architecture" style="color: orange;">
-        <span class="legend-color" style="background: orange;"></span> Arhitectură
-      </div>
-      <div class="legend-entry" data-kind="hotel">
-        <span style="display:inline-block; width:10px; height:10px; background:deeppink; border-radius:50%; margin-right:5px;"></span>
-        <span style="color:deeppink; font-weight:bold;">Hoteluri</span>
-      </div>
+
+
 
 
 
@@ -288,6 +306,48 @@
 </main>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
+
+
+<script>
+  particlesJS('particles-js', {
+    particles: {
+      number: { value: 50 },
+      color: { value: "#00ffff" }, // neon albastru
+      shape: { type: "circle" },
+      opacity: { value: 0.6 },
+      size: { value: 2.5 },
+      line_linked: {
+        enable: true,
+        distance: 130,
+        color: "#00ffff", // neon albastru
+        opacity: 0.4,
+        width: 1
+      },
+      move: { enable: true, speed: 1.5 }
+    },
+    interactivity: {
+      events: {
+        onhover: { enable: true, mode: "repulse" },
+        onclick: { enable: true, mode: "bubble" }
+      },
+      modes: {
+        repulse: { distance: 100, duration: 0.4 },
+        bubble: {
+          distance: 120,
+          size: 6,
+          duration: 2,
+          opacity: 0.8,
+          speed: 3
+        }
+      }
+    }
+    ,
+    retina_detect: true
+  });
+
+</script>
 
 
 <script>
@@ -311,28 +371,24 @@
 
   function getColorByType(kinds) {
     if (!kinds) return "gray";
-    if (kinds.includes("hotel")) return "deeppink";
-    if (kinds.includes("museum")) return "purple";
-    if (kinds.includes("architecture")) return "yellow";
-    if (kinds.includes("cultural")) return "orange";
-    return "red";
+    kinds = kinds.toLowerCase();
+
+    if (kinds.includes("museums") || kinds.includes("cultural")) return "green";
+    if (kinds.includes("architecture") || kinds.includes("bridges") || kinds.includes("fortifications")) return "orange";
+    if (kinds.includes("natural") || kinds.includes("gardens") || kinds.includes("parks") || kinds.includes("forests")) return "purple";
+    if (kinds.includes("churches") || kinds.includes("temples") || kinds.includes("cathedrals")) return "lightgray";
+    if (kinds.includes("mountain_peaks")) return "brown";
+    if (kinds.includes("monuments") || kinds.includes("statues") || kinds.includes("memorials")) return "yellow";
+
+    return "red"; // atracții generale fallback
   }
 
-  function reloadAttractions() {
-    const icon = document.querySelector(".reload-icon");
-    icon.classList.add("spin");
 
-    const city = document.getElementById("searchInput").value || "Baia Mare";
-    getAttractionsByCity(city);
 
-    setTimeout(() => icon.classList.remove("spin"), 500);
-  }
+
 
   function getAttractionsByBbox() {
     markerLayer.clearLayers();
-
-    const icon = document.querySelector(".reload-icon");
-    icon.style.display = "block";
 
     const bounds = map.getBounds();
     const lon_min = bounds.getWest();
@@ -343,6 +399,7 @@
     fetch(`/api/attractions/bbox?lon_min=${lon_min}&lat_min=${lat_min}&lon_max=${lon_max}&lat_max=${lat_max}`)
             .then(res => res.json())
             .then(data => {
+              console.log(data);
               lastAttractions = data;
 
               data.forEach(item => {
@@ -360,16 +417,7 @@
                         });
               });
 
-              if (data.length > 0) {
-                const first = data[0];
-                if (mainCityMarker) map.removeLayer(mainCityMarker);
-                mainCityMarker = L.marker([first.lat, first.lon])
-                        .addTo(map)
-                        .bindPopup(city)
-                      // .openPopup(); // eliminat ca să nu mute harta
-              }
 
-              icon.style.display = "none";
             });
   }
 
@@ -540,14 +588,25 @@
                   if (mainCityMarker) map.removeLayer(mainCityMarker);
 
                   // 🔵 Aici punem markerul albastru + etichetă deasupra
-                  mainCityMarker = L.marker([first.lat, first.lon])
-                          .addTo(map)
-                          .bindTooltip(city, {
-                            permanent: true,
-                            direction: 'top',
-                            offset: [0, -10],
-                            className: 'city-tooltip'
+                  fetch(`https://nominatim.openstreetmap.org/reverse?lat=${first.lat}&lon=${first.lon}&format=json`)
+                          .then(response => response.json())
+                          .then(locationData => {
+                            const cityName = locationData.address.city ||
+                                    locationData.address.town ||
+                                    locationData.address.village ||
+                                    locationData.address.county ||
+                                    "Loc necunoscut";
+
+                            mainCityMarker = L.marker([first.lat, first.lon])
+                                    .addTo(map)
+                                    .bindTooltip(cityName, {
+                                      permanent: true,
+                                      direction: 'top',
+                                      offset: [0, -10],
+                                      className: 'city-tooltip'
+                                    });
                           });
+
 
                   map.setView([first.lat, first.lon], 14); // ✅ mută harta la oraș
                 } else {
@@ -586,46 +645,99 @@
 
   window.onload = () => {
     getAttractionsByBbox();
-    document.querySelector(".reload-icon").style.display = "none";
+
+    const defaultLat = 47.6596;
+    const defaultLon = 23.5795;
+
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${defaultLat}&lon=${defaultLon}&format=json`)
+            .then(response => response.json())
+            .then(locationData => {
+              const cityName = locationData.address.city ||
+                      locationData.address.town ||
+                      locationData.address.village ||
+                      locationData.address.county ||
+                      "Loc necunoscut";
+
+              const blueIcon = L.icon({
+                iconUrl: 'https://maps.gstatic.com/mapfiles/ms2/micons/blue-dot.png',
+                iconSize: [32, 32],
+                iconAnchor: [16, 32],
+              });
+
+              mainCityMarker = L.marker([defaultLat, defaultLon], { icon: blueIcon })
+                      .addTo(map)
+                      .bindTooltip(cityName, {
+                        permanent: true,
+                        direction: 'top',
+                        offset: [0, -10],
+                        className: 'city-tooltip'
+                      });
+            });
+
+    const searchInput = document.querySelector("#searchInput");
+    searchInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") {
+        searchCity(searchInput.value);
+      }
+    });
+
+    const searchBtn = document.querySelector("#searchBtn");
+    if (searchBtn) {
+      searchBtn.addEventListener("click", () => {
+        searchCity(searchInput.value);
+      });
+    }
+
+    const filterBtn = document.querySelector("#filterBtn");
+    if (filterBtn) {
+      filterBtn.addEventListener("click", applyFilters);
+    }
+
+    const attractionBtn = document.querySelector("#attractionBtn");
+    if (attractionBtn) {
+      attractionBtn.addEventListener("click", getAttractionsByBbox);
+    }
+
+    // Dacă ai un dropdown pentru vizualizare listă:
+
   };
 
-  document.querySelectorAll(".legend-entry").forEach(entry => {
-    entry.addEventListener("click", () => {
-      const kind = entry.getAttribute("data-kind");
-      let filtered = [];
 
-      if (kind === "main") {
-        if (mainCityMarker) {
-          map.setView(mainCityMarker.getLatLng(), 14);
-          mainCityMarker.openPopup();
-        }
+  document.querySelectorAll(".legend span[data-type]").forEach(span => {
+    span.addEventListener("click", () => {
+      const type = span.dataset.type;
+      let targetColor;
+
+      // mapăm tipul pe culoarea returnată de getColorByType()
+      switch (type) {
+        case "museum": targetColor = "green"; break;
+        case "architecture": targetColor = "orange"; break;
+        case "nature": targetColor = "purple"; break;
+        case "religious": targetColor = "lightgray"; break;
+        case "mountain": targetColor = "brown"; break;
+        case "monument": targetColor = "yellow"; break;
+        case "general": targetColor = "red"; break;
+        default: return;
+      }
+
+      const candidates = lastAttractions.filter(item => getColorByType(item.kinds) === targetColor);
+
+      if (candidates.length === 0) {
+        alert("Nicio atracție găsită pentru această categorie.");
         return;
       }
 
-      if (kind === "general") {
-        filtered = lastAttractions.filter(item =>
-                !item.kinds.includes("hotel") &&
-                !item.kinds.includes("museum") &&
-                !item.kinds.includes("architecture")
-        );
-      } else if (kind === "hotel") {
-        filtered = lastAttractions.filter(item =>
-                item.kinds.includes("hotel") || item.kinds.includes("accomodations")
-        );
-      } else {
-        filtered = lastAttractions.filter(item => item.kinds.includes(kind));
-      }
+      const random = candidates[Math.floor(Math.random() * candidates.length)];
+      map.setView([random.lat, random.lon], 16); // zoom pe locație
 
-      if (filtered.length > 0) {
-        const random = filtered[Math.floor(Math.random() * filtered.length)];
-        map.setView([random.lat, random.lon], 15);
-        L.popup()
-                .setLatLng([random.lat, random.lon])
-                .setContent(`<strong>${random.name}</strong><br>${random.kinds}`)
-                .openOn(map);
-      }
+      // popup automat (opțional)
+      L.popup()
+              .setLatLng([random.lat, random.lon])
+              .setContent(`<strong>${random.name || "Fără nume"}</strong><br>${random.kinds}`)
+              .openOn(map);
     });
   });
+
 </script>
 
 

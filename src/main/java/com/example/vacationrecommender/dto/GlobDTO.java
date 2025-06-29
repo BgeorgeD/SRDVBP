@@ -1,9 +1,8 @@
 package com.example.vacationrecommender.dto;
 
 
-
 public record GlobDTO(
-        String id,
+        String xid,
         String name,
         String description,
         String imageUrl,
@@ -11,4 +10,6 @@ public record GlobDTO(
         double lat,
         double lng
 ) {}
+
+
 

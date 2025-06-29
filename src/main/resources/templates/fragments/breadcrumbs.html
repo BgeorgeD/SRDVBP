@@ -1,0 +1,12 @@
+<!-- templates/fragments/breadcrumbs.html -->
+<div th:fragment="breadcrumbs">
+    <nav aria-label="breadcrumb" style="background-color: #f8f9fa; padding: 10px 20px; border-radius: 8px; margin-bottom: 20px;">
+        <ol style="list-style: none; display: flex; gap: 8px; padding: 0; margin: 0;">
+            <li th:each="crumb, iterStat : ${breadcrumbs}">
+                <a th:href="${crumb.url}" style="text-decoration: none; color: #007bff;"
+                   th:text="${crumb.label}">Etichetă</a>
+                <span th:if="${!iterStat.last}">/</span>
+            </li>
+        </ol>
+    </nav>
+</div>

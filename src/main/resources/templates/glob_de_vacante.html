@@ -1,146 +1,242 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <title>Glob de Vacanțe</title>
+    <meta charset="UTF-8">
+    <title>Glob Vacanțe - Cesium</title>
+
+    <script src="https://cesium.com/downloads/cesiumjs/releases/1.118/Build/Cesium/Cesium.js"></script>
+    <link href="https://cesium.com/downloads/cesiumjs/releases/1.118/Build/Cesium/Widgets/widgets.css" rel="stylesheet"/>
+
     <style>
-        body, html { margin: 0; height: 100%; overflow: hidden; background: #000; }
-        #globeViz { width: 100%; height: 100%; }
+        html, body, #cesiumContainer {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+        }
         .overlay {
             position: absolute;
             bottom: 16px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
+            flex-wrap: wrap;
             gap: 12px;
-            overflow-x: auto;
             padding: 0 16px;
+            z-index: 1000;
         }
         .card {
             min-width: 220px;
             background: rgba(255,255,255,0.9);
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            border-radius: 12px;
             padding: 12px;
-            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         .card img { width: 100%; height: 120px; object-fit: cover; border-radius: 8px; }
         .card h3 { margin: 8px 0 4px; font-size: 1.1em; }
         .card p { font-size: 0.9em; color: #444; }
-        #loading {
+
+        #startBtn {
             position: absolute;
             top: 16px;
             left: 50%;
             transform: translateX(-50%);
-            color: #fff;
-            font-size: 1.2em;
-            display: none;
+            z-index: 1000;
+            background: white;
+            border: none;
+            border-radius: 24px;
+            padding: 10px 20px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
         }
     </style>
 </head>
 <body>
-<div id="globeViz"></div>
-<div id="loading">Se încarcă...</div>
+<div id="cesiumContainer"></div>
 <div id="results" class="overlay"></div>
 
-<!-- 1) Încarcă Three.js -->
-<script src="https://unpkg.com/three@0.152.2/build/three.min.js"></script>
-<!-- 2) Încarcă Globe.gl -->
-<script src="https://unpkg.com/globe.gl"></script>
-<!-- 3) Logică -->
+
+<div id="popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: white; padding: 24px; border-radius: 12px; max-width: 500px; box-shadow: 0 0 15px rgba(0,0,0,0.5);
+    z-index: 2000;">
+    <h2 id="popup-title"></h2>
+    <p id="popup-location" style="font-style: italic; color: gray;"></p>
+    <p id="popup-description"></p>
+    <a id="popup-wikipedia" href="#" target="_blank" style="display:none; margin-top: 10px; color: blue;">Wikipedia</a>
+    <button onclick="document.getElementById('popup').style.display='none'"
+            style="margin-top: 12px; padding: 8px 16px; border: none; background: #007bff; color: white; border-radius: 6px; cursor: pointer;">
+        Închide
+    </button>
+</div>
+
+<button id="startBtn">🎲 Începe jocul vacanței</button>
+
+<!-- Adaugă un buton de reset -->
+<button id="resetBtn" style="
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 24px;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    display: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+">🗑 Închide rezultate</button>
+
+
+<script th:inline="javascript">
+    const CESIUM_TOKEN = /*[[${cesiumToken}]]*/ '';
+    Cesium.Ion.defaultAccessToken = CESIUM_TOKEN;
+</script>
+
 <script>
-    // 1. Referințe DOM
-    const globeEl   = document.getElementById('globeViz');
-    const loadingEl = document.getElementById('loading');
-    const resultsEl = document.getElementById('results');
+    let spinning = false;
 
-    // 2. Instanțiere glob
-    const globe = Globe()(globeEl)
-        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-night.jpg')
-        .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png');
+    const terrain = Cesium.createWorldTerrain?.() || new Cesium.EllipsoidTerrainProvider();
 
-    // 3. Lumină și rotație
-    globe.scene().add(new THREE.AmbientLight(0xffffff, 0.7));
-    globe.controls().autoRotate      = true;
-    globe.controls().autoRotateSpeed = 0.3;
+    const viewer = new Cesium.Viewer('cesiumContainer', {
+        terrainProvider: terrain,
+        baseLayerPicker: false
+    });
 
-    // 4. TEST STATIC: un marker roșu mare la Paris, și log
-    const testPoints = [{ lat: 48.85, lng: 2.35, size: 2, color: 'red', data: {} }];
-    globe
-        .pointsData(testPoints)
-        .pointLat(d => d.lat)
-        .pointLng(d => d.lng)
-        .pointAltitude(0.05)
-        .pointRadius(d => d.size);
-    console.log('🔴 Marker static setat:', globe.pointsData().length);
+    // Funcție de auto-rotație
+    viewer.clock.shouldAnimate = false;
+    let spinSpeed = 0.001;
 
-    // 5. Funcția de afișare carduri
-    function showCard(v) {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-        <img src="${v.imageUrl}" alt="${v.name}"/>
-        <h3>${v.name}</h3>
-        <p>${v.description}</p>
-      `;
-        resultsEl.appendChild(card);
-    }
+    viewer.scene.postRender.addEventListener(() => {
+        if (spinning) {
 
-    // 6. Handler click pe glob
-    globe.onGlobeClick(async ({ lat, lng }) => {
-        globe.controls().autoRotate = false;
-        globe.pointOfView({ lat, lng, altitude: 0.8 }, 1000);
 
-        loadingEl.style.display = 'block';
-        resultsEl.innerHTML = '';
-        globe.pointsData([]); // curăță markerii anteriori
+            viewer.scene.camera.rotate(Cesium.Cartesian3.UNIT_Z, -spinSpeed);
 
-        try {
-            const resp = await fetch(`/vacations/by-coordinates?lat=${lat}&lon=${lng}&radius=5000`);
-            const list = await resp.json();
-            loadingEl.style.display = 'none';
-
-            console.log('📥 Date din backend:', list);
-
-            if (!list.length) {
-                resultsEl.innerHTML = '<div style="color:white">Nici o destinație găsită.</div>';
-                return;
+            // creștem viteza treptat (cu limită)
+            if (spinSpeed < 0.04) {
+                spinSpeed += 0.0001;
             }
-
-            // generează markerii
-            const points = list.map(v => ({
-                lat: v.lat,
-                lng: v.lng,
-                size: 1.5,
-                color: 'orange',
-                data: v
-            }));
-
-            // ...după fetch și pointsData...
-            globe
-                .pointsData(points)
-                .pointLat(d => d.lat)
-                .pointLng(d => d.lng)
-                .pointColor(d => d.color)
-                .pointAltitude(d => 0.02)
-                .pointRadius(d => 0.01 * d.size);
+        }
+    });
 
 
-            console.log('📍 Markerii dinamici setați:', globe.pointsData().length);
+    document.getElementById("startBtn").addEventListener("click", () => {
+        spinning = true;
+        viewer.clock.shouldAnimate = true;
+        document.getElementById("startBtn").style.display = "none";
+    });
 
-            globe.onPointClick(d => {
-                globe.pointOfView({ lat: d.lat, lng: d.lng, altitude: 0.5 }, 1000);
-                resultsEl.innerHTML = '';
-                showCard(d.data);
+
+
+    // Click pe glob -> oprește rotația + trimite coordonate
+    viewer.screenSpaceEventHandler.setInputAction(async function onLeftClick(click) {
+        if (!spinning) return;
+
+        spinning = false;
+        viewer.clock.shouldAnimate = false;
+
+        const cartesian = viewer.scene.camera.pickEllipsoid(click.position);
+        if (!cartesian) return;
+
+        const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+        const lat = Cesium.Math.toDegrees(cartographic.latitude);
+        const lon = Cesium.Math.toDegrees(cartographic.longitude);
+
+        viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(lon, lat, 800000.0)
+        });
+
+        const resp = await fetch(`/vacations/by-coordinates?lat=${lat}&lon=${lon}&radius=20000`);
+        const list = await resp.json();
+
+        viewer.entities.removeAll();
+        document.getElementById("results").innerHTML = "";
+        resetBtn.style.display = "inline-block";
+
+        if (!list.length) {
+            document.getElementById("results").innerHTML = '<div style="color:white">Nicio destinație găsită.</div>';
+            return;
+        }
+
+        // Butonul "Închide rezultate"
+        resetBtn.addEventListener("click", () => {
+            viewer.entities.removeAll();
+            document.getElementById("results").innerHTML = "";
+            resetBtn.style.display = "none";
+            startBtn.style.display = "inline-block";
+        });
+
+
+        list.forEach(dest => {
+            viewer.entities.add({
+                name: dest.name,
+                position: Cesium.Cartesian3.fromDegrees(dest.lng, dest.lat),
+                point: {
+                    pixelSize: 10,
+                    color: Cesium.Color.ORANGE,
+                    outlineColor: Cesium.Color.WHITE,
+                    outlineWidth: 2
+                }
+            });
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+            <img src="${dest.imageUrl}" alt="${dest.name}"/>
+            <h3>${dest.name}</h3>
+            <p>${dest.description}</p>
+        `;
+
+            // Afișare detalii pe click
+            card.addEventListener('click', async () => {
+                try {
+                    const res = await fetch(`/vacations/details/${dest.xid}`);
+                    const data = await res.json();
+
+                    const title = data.name || dest.name;
+                    const description = data.wikipedia_extracts?.text || data.info?.descr || "Nicio descriere disponibilă.";
+                    const city = data.address?.city || data.address?.state || "Oraș necunoscut";
+                    const country = data.address?.country || "Țară necunoscută";
+                    const wikipedia = data.wikipedia || null;
+
+                    document.getElementById("popup-title").textContent = title;
+                    document.getElementById("popup-location").textContent = `${city}, ${country}`;
+                    document.getElementById("popup-description").textContent = description;
+
+                    const wikiLink = document.getElementById("popup-wikipedia");
+                    if (wikipedia) {
+                        wikiLink.href = wikipedia;
+                        wikiLink.style.display = 'inline-block';
+                    } else {
+                        wikiLink.style.display = 'none';
+                    }
+
+                    document.getElementById("popup").style.display = 'block';
+
+                } catch (err) {
+                    console.error("Eroare la detalii:", err);
+                    alert("Nu s-au putut obține detalii.");
+                }
             });
 
 
 
-        } catch (e) {
-            console.error('‼️ Eroare:', e);
-            loadingEl.textContent = 'Eroare la încărcare.';
-        }
-    });
+
+            document.getElementById("results").appendChild(card);
+        });
+
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+
+
+
 
 </script>
 </body>

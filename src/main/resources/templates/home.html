@@ -32,16 +32,17 @@
     }
 
     .container {
+      max-width: 900px;
+      margin: 100px auto;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 100px auto;
       gap: 30px;
       flex-wrap: wrap;
       padding: 20px;
-      opacity: 0; /* Ascunde tot containerul la început */
-      animation: fadeIn 2s ease-in-out forwards; /* Efect de apariție */
-      animation-delay: 1s; /* Întârziere pentru ca fundalul să fie vizibil */
+      opacity: 0;
+      animation: fadeIn 2s ease-in-out forwards;
+      animation-delay: 1s;
     }
 
     .card {
@@ -51,9 +52,9 @@
       border-radius: 20px;
       overflow: hidden;
       box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4);
-      background-color: rgba(0, 0, 0, 0.1); /* Aproape transparent */
-      transform: scale(0); /* Început de la dimensiune 0 */
-      opacity: 0; /* Invizibil inițial */
+      background-color: rgba(0, 0, 0, 0.1);
+      transform: scale(0);
+      opacity: 0;
       transition: transform 2s ease-out, opacity 1s ease-out, background-color 1s ease, border-color 0.3s ease;
       cursor: pointer;
     }
@@ -61,17 +62,16 @@
     .card img {
       width: 100%;
       height: 100%;
-      object-fit: cover; /* Face ca imaginea să umple tot spațiul păstrând proporțiile */
-      filter: blur(5px); /* Blur pe imagine */
+      object-fit: cover;
+      filter: blur(5px);
       transition: filter 0.3s ease;
     }
-
 
     .card-title {
       font-size: 30px;
       margin: 15px 0;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-      opacity: 0; /* Ascuns inițial */
+      opacity: 0;
       transition: opacity 0.3s ease;
     }
 
@@ -83,25 +83,24 @@
       font-size: 18px;
       border-radius: 10px;
       cursor: pointer;
-      opacity: 0; /* Ascuns inițial */
+      opacity: 0;
       transition: opacity 0.3s ease, transform 0.3s ease;
       transform: scale(0.9);
     }
 
-    /* Hover efect */
     .card:hover {
-      background-color: rgba(0, 0, 0, 0.8); /* Devine vizibil pe hover */
+      background-color: rgba(0, 0, 0, 0.8);
       border-color: rgba(255, 255, 255, 0.5);
     }
 
     .card:hover img {
-      filter: blur(0); /* Elimină blur-ul */
+      filter: blur(0);
     }
 
     .card:hover .card-title,
     .card:hover button {
-      opacity: 1; /* Textul și butonul devin vizibile */
-      transform: scale(1); /* Animație de mărire */
+      opacity: 1;
+      transform: scale(1);
     }
 
     @keyframes fadeIn {
@@ -122,48 +121,33 @@
 <!-- Titlul paginii -->
 <div class="title">Alege destinația ideală pentru vacanța ta!</div>
 
-<!-- Chenarele -->
 <div class="container">
-  <div class="card" id="card1">
-    <a href="/mountain">
-      <img src="/images/munte.jpg" alt="Vacanță Montană">
-      <div class="card-title">Vacanță Montană</div>
-    </a>
-  </div>
-
+  <!-- Card AI Recommendation -->
   <div class="card" id="card2">
-    <a href="/sea">
-      <img src="/images/mare.jpg" alt="Vacanță la Mare">
-      <div class="card-title">Vacanță la Mare</div>
+    <a href="/api/ai">
+      <img src="/images/cards.jpg" alt="Sugestie AI">
+      <div class="card-title">Sugestie AI</div>
     </a>
   </div>
 
+  <!-- Card Glob Cesium -->
   <div class="card" id="card3">
-    <a href="/city">
-      <img src="/images/cultural.jpg" alt="Vacanță Culturală">
-      <div class="card-title">Vacanță Culturală</div>
+    <a href="/vacations/game">
+      <img src="/images/glob.jpg" alt="Explorează Globul">
+      <div class="card-title">Explorează Globul</div>
     </a>
   </div>
-
-  <div class="card" id="card4">
-    <a href="/jungle">
-      <img src="/images/jungla.jpg" alt="Vacanță în Natură">
-      <div class="card-title">Vacanță în Natură</div>
-    </a>
-  </div>
-
-</div>
 </div>
 
 <script>
-  // Adaugă un efect de apariție treptată pentru fiecare card
+  // Efect de apariție treptată
   document.addEventListener("DOMContentLoaded", () => {
     const cards = document.querySelectorAll(".card");
     cards.forEach((card, index) => {
       setTimeout(() => {
         card.style.transform = "scale(1)";
         card.style.opacity = "1";
-      }, index * 500); // Apar unul câte unul la interval de 500ms
+      }, index * 500);
     });
   });
 </script>

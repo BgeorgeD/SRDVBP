@@ -81,12 +81,22 @@ public class OpenTripMapService {
 
     public List<AttractionDto> getAttractionsByBbox(double lonMin, double latMin, double lonMax, double latMax) {
         List<AttractionDto> result = new ArrayList<>();
+
         try {
-            String url = String.format("https://api.opentripmap.com/0.1/en/places/bbox?lon_min=%s&lat_min=%s&lon_max=%s&lat_max=%s&format=geojson&limit=50&apikey=%s",
-                    lonMin, latMin, lonMax, latMax, apiKey);
+            String url = String.format(
+                    "https://api.opentripmap.com/0.1/en/places/bbox?lon_min=%s&lat_min=%s&lon_max=%s&lat_max=%s&format=geojson&limit=100&apikey=%s",
+                    lonMin, latMin, lonMax, latMax, apiKey
+            );
+
+            System.out.println("🔍 API BBOX URL: " + url);  // DEBUG
 
             JsonNode root = objectMapper.readTree(restTemplate.getForObject(url, String.class));
             JsonNode features = root.get("features");
+
+            if (features == null || !features.isArray()) {
+                System.out.println("❌ Nicio secțiune 'features' în răspuns.");
+                return result;
+            }
 
             for (JsonNode feature : features) {
                 String name = feature.at("/properties/name").asText();
@@ -100,11 +110,12 @@ public class OpenTripMapService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("❗ Eroare în getAttractionsByBbox: " + e.getMessage());
         }
 
         return result;
     }
+
 
 
 
