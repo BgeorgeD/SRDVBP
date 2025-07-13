@@ -153,7 +153,13 @@
                 <p><span class="label">Tip:</span> <span class="value" th:text="${recomandare.tipPachet}"></span></p>
                 <p><span class="label">Atracții:</span> <span class="value" th:text="${recomandare.atractii}"></span></p>
                 <div class="price-badge" th:text="${recomandare.pret + ' EUR'}"></div>
-                <a th:href="@{'/api/ai/rezerva/' + ${iterStat.index}}" class="btn btn-primary mt-3 d-block">Rezervă Acum!</a>
+                <a th:href="@{'/api/ai/rezerva/' + ${iterStat.index}}"
+                   target="_blank"
+                   class="btn btn-primary mt-3 d-block">
+                    Rezervă Acum!
+                </a>
+
+
 
             </div>
         </div>

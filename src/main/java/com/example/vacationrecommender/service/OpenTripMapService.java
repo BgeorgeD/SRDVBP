@@ -1,8 +1,13 @@
 package com.example.vacationrecommender.service;
 
 import com.example.vacationrecommender.dto.AttractionDto;
+import com.example.vacationrecommender.entity.Attraction;
+import com.example.vacationrecommender.entity.Destination;
+import com.example.vacationrecommender.repository.AttractionRepository;
+import com.example.vacationrecommender.repository.DestinationRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,8 +23,16 @@ public class OpenTripMapService {
     @Value("${opentripmap.api.key}")
     private String apiKey;
 
+    @Autowired
+    private DestinationRepository destinationRepository;
+
+    @Autowired
+    private AttractionRepository attractionRepository;
+
+
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
+
 
     public OpenTripMapService() {
         this.restTemplate = new RestTemplate();
@@ -28,6 +41,7 @@ public class OpenTripMapService {
 
     public List<AttractionDto> getAttractionsByCity(String cityName) {
         List<AttractionDto> result = new ArrayList<>();
+
 
         try {
             // 1. Obține coordonatele orașului
@@ -115,6 +129,88 @@ public class OpenTripMapService {
 
         return result;
     }
+
+
+    public void fetchAndSaveAttractionsForDestination(Long destinationId) {
+        Destination destination = destinationRepository.findById(destinationId)
+                .orElseThrow(() -> new RuntimeException("Destinația nu există"));
+
+        double lat = destination.getLatitude();
+        double lon = destination.getLongitude();
+
+        // Folosim metoda ta existentă (reuse)
+        List<AttractionDto> dtos = getAttractionsByBbox(
+                lon - 0.05, lat - 0.05, lon + 0.05, lat + 0.05
+        );
+
+        for (AttractionDto dto : dtos) {
+            if (!attractionRepository.existsByXid(dto.getXid())) {
+                Attraction attraction = new Attraction();
+                attraction.setXid(dto.getXid());
+                attraction.setName(dto.getName());
+                attraction.setDescription(""); // Poți completa mai târziu cu getAttractionDetailsByXid()
+                attraction.setDestination(destination);
+                attractionRepository.save(attraction);
+            }
+        }
+    }
+
+    public List<AttractionDto> getAndSaveAttractionsByCity(String cityName) {
+        List<AttractionDto> dtos = getAttractionsByCity(cityName);
+
+
+
+
+        JsonNode geoJson = null;
+
+
+
+        double lat = 0;
+        double lon = 0;
+
+        try {
+            String geoUrl = String.format("https://api.opentripmap.com/0.1/en/places/geoname?name=%s&apikey=%s", cityName, apiKey);
+            geoJson = objectMapper.readTree(restTemplate.getForObject(geoUrl, String.class));
+            lat = geoJson.get("lat").asDouble();
+            lon = geoJson.get("lon").asDouble();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        final double finalLat = lat;
+        final double finalLon = lon;
+
+
+
+
+        Destination destination = destinationRepository.findByCity(cityName)
+                .orElseGet(() -> {
+                    Destination newDest = new Destination();
+                    newDest.setCity(cityName);
+                    newDest.setName(cityName); // ← adaugă asta
+                    newDest.setLatitude(finalLat);
+                    newDest.setLongitude(finalLon);
+                    return destinationRepository.save(newDest);
+                });
+
+
+
+
+
+        for (AttractionDto dto : dtos) {
+            if (!attractionRepository.existsByXid(dto.getXid())) {
+                Attraction attraction = new Attraction();
+                attraction.setXid(dto.getXid());
+                attraction.setName(dto.getName());
+                attraction.setDescription(""); // se poate completa ulterior
+                attraction.setDestination(destination);
+                attractionRepository.save(attraction);
+            }
+        }
+
+        return dtos;
+    }
+
+
 
 
 

@@ -12,6 +12,7 @@ public class Destination {
     private String name;
     private String description;
     private String activities;
+    private String city;
     private Double budget;
     private String climate;
     private String image; // URL sau cale pentru imagine
@@ -33,6 +34,39 @@ public class Destination {
     public void setBudget(Double budget) { this.budget = budget; }
     public String getClimate() { return climate; }
     public void setClimate(String climate) { this.climate = climate; }
+
+    @Column(nullable = false)
+    private double latitude;
+
+    @Column(nullable = false)
+    private double longitude;
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+
 
 
 }

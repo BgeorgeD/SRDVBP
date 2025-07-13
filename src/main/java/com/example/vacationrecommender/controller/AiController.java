@@ -65,10 +65,11 @@ public class AiController {
     @GetMapping("/rezerva/{id}")
     public String showReservationForm(@PathVariable int id, Model model) {
         if (id < 0 || id >= cache.size()) return "redirect:/api/ai";
-        model.addAttribute("recomandare", cache.get(id));
-        model.addAttribute("recomandareIndex", id); // 👈 Adaugă indexul
+        VacationRecommendation recomandare = cache.get(id);
+        model.addAttribute("recomandare", recomandare);
         return "rezervare";
     }
+
 
 
     @PostMapping("/rezerva/{id}")

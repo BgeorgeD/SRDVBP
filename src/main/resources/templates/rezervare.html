@@ -1,99 +1,45 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <title>Rezervare Vacanță</title>
     <meta charset="UTF-8">
-    <title>Rezervă Vacanța</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(to right, #e0f2f1, #e1f5fe);
-            font-family: 'Segoe UI', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .form-container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            width: 100%;
-        }
-        h2 {
-            font-weight: 700;
-            color: #006064;
-            margin-bottom: 30px;
-        }
-        .form-label {
-            font-weight: 600;
-            color: #333;
-        }
-        .btn-primary {
-            border-radius: 30px;
-            padding: 12px 30px;
-            font-weight: bold;
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<div class="form-container">
-    <h2 class="text-center">Completează Detaliile pentru Rezervare</h2>
-    <form th:action="@{/api/ai/rezerva/{id}(id=${recomandareIndex})}" method="post">
+<body class="bg-gradient-to-r from-blue-100 to-teal-100 min-h-screen flex items-center justify-center">
 
+<div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-4xl">
+    <h2 class="text-2xl font-bold text-center text-teal-800 mb-6">
+        Rezervă vacanța ta în <span class="text-blue-700" th:text="${recomandare.destinatie}">Destinație</span>
+    </h2>
+    <p class="text-center text-gray-600 mb-6">Alege o platformă pentru a continua:</p>
 
-    <div class="mb-3">
-            <label class="form-label">Nume complet</label>
-            <input type="text" class="form-control" name="nume" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" class="form-control" name="email" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Telefon</label>
-            <input type="tel" class="form-control" name="telefon" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Număr persoane</label>
-            <input type="number" class="form-control" name="persoane" min="1" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Data plecării</label>
-            <input type="date" class="form-control" name="dataPlecare" required>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Tip cameră</label>
-            <select class="form-select" name="camera">
-                <option>Single</option>
-                <option>Dublă</option>
-                <option>Family</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Metodă plată</label><br>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="plata" value="Card" required>
-                <label class="form-check-label">Card</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="plata" value="Transfer bancar">
-                <label class="form-check-label">Transfer bancar</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="plata" value="La agenție">
-                <label class="form-check-label">La agenție</label>
-            </div>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Observații speciale</label>
-            <textarea class="form-control" name="observatii" rows="3"></textarea>
-        </div>
-        <div class="text-center">
-            <button type="submit" class="btn btn-primary">Confirmă Rezervarea</button>
-        </div>
-    </form>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <!-- Booking -->
+        <a th:href="'https://www.booking.com/searchresults.html?ss=' + ${recomandare.destinatie}" target="_blank"
+           class="flex flex-col items-center justify-center p-6 bg-gray-50 hover:bg-blue-50 rounded-xl shadow-md hover:shadow-lg transition hover:scale-105">
+            <img src="/images/booking_logo.png" alt="Booking" class="h-14 mb-2"/>
+            <h3 class="text-lg font-semibold text-gray-800">Booking.com</h3>
+            <p class="text-sm text-gray-600 text-center">Cazare în <span th:text="${recomandare.destinatie}"></span></p>
+        </a>
+
+        <!-- Expedia -->
+        <a th:href="'https://www.expedia.com/Hotel-Search?destination=' + ${recomandare.destinatie}" target="_blank"
+           class="flex flex-col items-center justify-center p-6 bg-gray-50 hover:bg-blue-50 rounded-xl shadow-md hover:shadow-lg transition hover:scale-105">
+            <img src="/images/expedia_logo.png" alt="Expedia" class="h-14 mb-2"/>
+            <h3 class="text-lg font-semibold text-gray-800">Expedia</h3>
+            <p class="text-sm text-gray-600 text-center">Hoteluri în <span th:text="${recomandare.destinatie}"></span></p>
+        </a>
+
+        <!-- Tripadvisor -->
+        <a th:href="'https://www.tripadvisor.com/Search?q=' + ${recomandare.destinatie}" target="_blank"
+           class="flex flex-col items-center justify-center p-6 bg-gray-50 hover:bg-blue-50 rounded-xl shadow-md hover:shadow-lg transition hover:scale-105">
+            <img src="/images/tripadvisor_logo.png" alt="Tripadvisor" class="h-14 mb-2"/>
+            <h3 class="text-lg font-semibold text-gray-800">Tripadvisor</h3>
+            <p class="text-sm text-gray-600 text-center">Idei și review-uri</p>
+        </a>
+    </div>
 </div>
+
 </body>
 </html>

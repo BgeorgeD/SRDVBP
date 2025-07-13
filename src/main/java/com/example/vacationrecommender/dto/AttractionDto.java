@@ -35,3 +35,5 @@ public class AttractionDto {
     public String getXid() { return xid; } // ✅ getter
     public void setXid(String xid) { this.xid = xid; } // ✅ setter
 }
+
+

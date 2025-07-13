@@ -21,9 +21,10 @@ public class OpenTripMapController {
     // ✅ Atracții pe baza numelui orașului
     @GetMapping
     public ResponseEntity<List<AttractionDto>> getAttractionsByCity(@RequestParam String city) {
-        List<AttractionDto> results = service.getAttractionsByCity(city);
+        List<AttractionDto> results = service.getAndSaveAttractionsByCity(city); // ✅ salvăm automat
         return ResponseEntity.ok(results);
     }
+
 
     @GetMapping("/details")
     public ResponseEntity<Map<String, Object>> getAttractionDetails(@RequestParam String xid) {
@@ -41,6 +42,20 @@ public class OpenTripMapController {
         List<AttractionDto> results = service.getAttractionsByBbox(lonMin, latMin, lonMax, latMax);
         return ResponseEntity.ok(results);
     }
+
+    @GetMapping("/save")
+    public ResponseEntity<List<AttractionDto>> getAndSaveByCity(@RequestParam String city) {
+        List<AttractionDto> results = service.getAndSaveAttractionsByCity(city);
+        return ResponseEntity.ok(results);
+    }
+
+
+
+
+
+
+
+
 
 
 
