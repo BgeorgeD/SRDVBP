@@ -87,13 +87,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/ai/**") // permite doar pe ruta asta fără token si este necesara pentru a continua functionalitatea AI
-                )
+                        .ignoringRequestMatchers("/api/ai/**", "/api/top-feedback/**","/api/translate")
+                        )
 
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/index","/login", "/css/**", "/js/**" ,"/images/**","/videos/**","/api/ai/**" ).permitAll()
+                        .requestMatchers("/index","/login", "/css/**", "/js/**" ,"/images/**","/videos/**","/api/ai/**","/api/top-feedback/**","/api/translate" ).permitAll()
                         .anyRequest().authenticated()
                 )
 

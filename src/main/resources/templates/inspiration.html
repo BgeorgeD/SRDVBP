@@ -3,160 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Destinațiile de vacanță preferate</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 2rem;
-            background: #f8f9fa;
-            color: #333;
-        }
-
-        h2 {
-            text-align: center;
-            color: #333;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        p.subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 2rem;
-        }
-
-        .vacation-info {
-            padding: 10px;
-            background: white;
-        }
-
-        .vacation-title, .vacation-price {
-            position: static;
-            background: none;
-            color: #333;
-            padding: 0;
-            max-width: 75%;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .vacation-card {
-            position: relative;
-        }
-
-
-
-        .vacation-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .vacation-card a {
-            display: block;
-            text-decoration: none;
-            color: inherit;
-            height: 100%;
-        }
-
-
-        .vacation-card:hover {
-            transform: scale(1.02);
-        }
-
-        .vacation-section {
-            margin-bottom: 3rem;
-        }
-        .vacation-section h3 {
-            color: #333;
-            margin-bottom: 1rem;
-            text-align: left;
-        }
-
-
-        .vacation-card img {
-            width: 100%;
-            height: 220px;
-            object-fit: cover;
-            display: block;
-        }
-
-        .vacation-title {
-            position: absolute;
-            top: 12px;
-            left: 12px;
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-
-        .breadcrumb {
-            font-size: 1.5rem;
-            color: #666;
-            margin-bottom: 1rem;
-        }
-
-        .breadcrumb a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-
-
-
-        .vacation-price {
-            position: absolute;
-            bottom: 12px;
-            right: 12px;
-            background: #ec157a;
-            color: white;
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-weight: 600;
-        }
-    </style>
+    <title>Vacanțe interesante</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<h2>Destinațiile de vacanță preferate ale clienților noștri</h2>
+<body class="bg-gradient-to-br from-cyan-50 to-blue-100 min-h-screen py-10 px-4">
 
-<nav class="breadcrumb">
-    <a href="http://localhost:8080/choice_page"> Acasă</a> / <span>Vacanțe interesante</span>
-</nav>
-
-
-<!--
-<section class="vacation-section">
-    <h3>🏖️ Top 5 vacanțe la mare</h3>
-    <div class="vacation-grid" id="topMare"></div>
-</section>
--->
+<!-- POPUP OPȚIUNI -->
+<div id="card-options-popup" class="hidden fixed bg-white shadow-lg rounded-xl p-4 z-50 border space-y-3">
+    <button onclick="handleAiVizitat()" class="block w-full text-left text-green-700 font-semibold hover:underline">✅ Ai vizitat?</button>
+    <button onclick="handleVreiSaVizitezi()" class="block w-full text-left text-blue-700 font-semibold hover:underline">✈️ Vrei să vizitezi?</button>
+</div>
 
 
-<section class="vacation-section">
-    <h3>💸 Top 5 vacanțe de buget</h3>
-    <div class="vacation-grid" id="topBuget"></div>
-</section>
+<div class="max-w-7xl mx-auto">
+    <header class="mb-10 text-center">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-teal-800">Vacanțe interesante</h1>
+        <p class="mt-3 text-lg text-gray-600">Topuri reale din peste 10.000 de vacanțe!</p>
+    </header>
 
-<section class="vacation-section">
-    <h3>🏰 Top 5 vacanțe de lux</h3>
-    <div class="vacation-grid" id="topLux"></div>
-</section>
+    <nav class="text-lg text-gray-600 mb-8 text-center">
+        <a href="http://localhost:8080/choice_page" class="text-blue-600 hover:underline">Acasă</a> /
+        <span class="text-gray-800 font-semibold">Vacanțe interesante</span>
+    </nav>
 
+    <div id="all-sections"></div>
+</div>
 
+<!-- MODAL FEEDBACK -->
+<div id="feedback-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-xl w-full max-w-md space-y-4 relative">
+        <h2 class="text-xl font-bold">Feedback pentru <span id="feedback-title"></span></h2>
 
-<p class="subtitle">Cele mai bune oferte pentru cele mai populare destinații de vacanță.</p>
+        <div id="existing-comments" class="text-sm text-gray-700 max-h-40 overflow-y-auto border p-2 rounded bg-gray-50"></div>
 
+        <textarea id="comentariu" rows="3" class="w-full border rounded p-2 mt-2" placeholder="Scrie un comentariu..."></textarea>
+        <input id="username" class="w-full border rounded p-2" placeholder="Numele tău (opțional)" />
 
+        <div>
+            Rating:
+            <select id="rating" class="border p-1 rounded">
+                <option value="1">⭐</option>
+                <option value="2">⭐⭐</option>
+                <option value="3">⭐⭐⭐</option>
+                <option value="4">⭐⭐⭐⭐</option>
+                <option value="5" selected>⭐⭐⭐⭐⭐</option>
+            </select>
+        </div>
+
+        <div class="flex justify-end space-x-2">
+            <button onclick="closeModal()" class="text-gray-600">Anulează</button>
+            <button onclick="submitFeedback()" class="bg-indigo-600 text-white px-4 py-2 rounded">Trimite</button>
+        </div>
+    </div>
+</div>
 
 <script>
+    const categorii = [
+        { id: "topBuget", label: "💸 Top vacanțe de buget", api: "buget", color: "text-pink-800" },
+        { id: "topLux", label: "🏯 Top vacanțe de lux", api: "lux", color: "text-purple-800" },
+        { id: "topMare", label: "🏖️ Top vacanțe la mare", api: "mare", color: "text-blue-700" },
+        { id: "topMunte", label: "🏔️ Top vacanțe la munte", api: "munte", color: "text-green-800" },
+        { id: "topCity", label: "🌆 City Break-uri preferate", api: "city", color: "text-indigo-700" },
+        { id: "topExotic", label: "🌍 Destinații exotice", api: "exotic", color: "text-orange-700" },
+    ];
+
+    function formatPret(pret) {
+        return pret ? pret + " EUR" : "Preț indisponibil";
+    }
+
+    function safeId(pachet, oras) {
+        return `rating-${pachet.replace(/\s+/g, '-')}-${oras.replace(/\s+/g, '-')}`;
+    }
+
+    function createCard(v) {
+        const rid = safeId(v.numePachet, v.orasStart);
+        const destinatieQuery = encodeURIComponent(v.destinatie + " booking");
+
+        return `
+      <div class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer p-2">
+        <img src="${v.imagine}" alt="${v.destinatie}" class="w-full h-56 object-cover rounded-lg">
+        <div class="p-4 flex flex-col space-y-2">
+          <h3 class="text-lg font-bold text-gray-900 truncate" title="${v.numePachet}">${v.numePachet}</h3>
+          <p class="text-sm text-gray-600"><strong>Destinație:</strong> ${v.destinatie}</p>
+          <p class="text-sm text-gray-600"><strong>Plecare:</strong> ${v.dataPlecare || '-'}</p>
+          <p class="text-sm text-gray-600"><strong>Oraș start:</strong> ${v.orasStart}</p>
+          <div class="text-sm text-yellow-600" id="${rid}">Se încarcă recenziile...</div>
+
+          <div class="flex flex-col gap-2 mt-3" id="opt-${rid}">
+            <button onclick="handleAiVizitat('${v.numePachet}', '${v.orasStart}', 'opt-${rid}')" class="bg-green-600 text-white py-1 rounded">Ai vizitat?</button>
+            <button onclick="handleVreiSaVizitezi('${destinatieQuery}', 'opt-${rid}')" class="bg-blue-600 text-white py-1 rounded">Vrei să vizitezi?</button>
+          </div>
+        </div>
+      </div>`;
+    }
+
+
+
+
+
+    function createSection(cat) {
+        return `
+      <section class="mb-16">
+        <h2 class="text-2xl font-semibold ${cat.color} mb-4">${cat.label}</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="${cat.id}"></div>
+      </section>`;
+    }
+
+    function handleAiVizitat(pachet, orasStart, containerId) {
+        openFeedbackModal(pachet, orasStart);
+        document.getElementById(containerId).classList.add("hidden");
+    }
+
+    function handleAiVizitat(pachet, orasStart, containerId) {
+        openFeedbackModal(pachet, orasStart);
+        document.getElementById(containerId).classList.add("hidden");
+    }
+
+
+
+    function hidePopupOnClickOutside(e) {
+        const popup = document.getElementById("card-options-popup");
+        if (!popup.contains(e.target)) {
+            popup.classList.add("hidden");
+        }
+    }
+
 
     function loadTop(uri, containerId) {
         fetch(`http://localhost:5000/api/top/${uri}`)
@@ -165,31 +136,125 @@
                 const container = document.getElementById(containerId);
                 container.innerHTML = "";
                 data.forEach(v => {
-                    const card = document.createElement("div");
-                    card.className = "vacation-card";
-                    card.innerHTML = `
-                    <div class="vacation-card">
-
-    <img src="${v.imagine}" alt="${v.destinatie}">
-    <div class="vacation-info">
-        <div class="vacation-title">${v.numePachet}</div>
-        <div class="vacation-price">${v.pret ? v.pret + ' EUR' : 'Preț indisponibil'}</div>
-    </div>
-</div>
-
-                `;
-                    container.appendChild(card);
+                    container.innerHTML += createCard(v);
+                    loadRating(v.numePachet, v.orasStart);
                 });
+
             })
             .catch(err => console.error("Eroare la top:", uri, err));
     }
 
-    loadTop("mare", "topMare");
-    loadTop("buget", "topBuget");
-    loadTop("lux", "topLux");
+    function loadRating(pachet, oras) {
+        const rid = safeId(pachet, oras);
+        fetch(`http://localhost:8080/api/top-feedback/summary/${encodeURIComponent(pachet)}/${encodeURIComponent(oras)}`)
+            .then(res => res.json())
+            .then(data => {
+                const el = document.getElementById(rid);
+                el.innerHTML = data.numar > 0
+                    ? `⭐ ${data.medie.toFixed(1)} din ${data.numar} recenzii`
+                    : "<span class='text-gray-400'>Fără recenzii</span>";
+            })
+            .catch(() => {
+                const el = document.getElementById(rid);
+                el.innerHTML = "<span class='text-red-500'>Eroare rating</span>";
+            });
+    }
+
+    const container = document.getElementById("all-sections");
+    categorii.forEach(cat => {
+        container.innerHTML += createSection(cat);
+        loadTop(cat.api, cat.id);
+    });
+
+
+
+    let currentPachet = "";
+    let currentStart = "";
+
+    function openFeedbackModal(numePachet, orasStart) {
+        currentPachet = numePachet;
+        currentStart = orasStart;
+        document.getElementById("feedback-title").textContent = numePachet;
+        document.getElementById("feedback-modal").classList.remove("hidden");
+
+        fetch(`http://localhost:8080/api/top-feedback/${encodeURIComponent(numePachet)}/${encodeURIComponent(orasStart)}`)
+            .then(res => res.json())
+            .then(data => {
+                const container = document.getElementById("existing-comments");
+                container.innerHTML = data.length > 0
+                    ? data.map(c => `
+                        <div class="border-b py-1">
+                          <strong>${c.username || 'Anonim'}</strong>: ${c.comentariu}<br/>
+                          <span class="text-yellow-500 text-xs">${'\u2b50'.repeat(c.rating)}</span>
+                        </div>
+                    `).join("")
+                    : "<p class='text-gray-400'>Nu există recenzii pentru această vacanță.</p>";
+            });
+    }
+
+    function closeModal() {
+        document.getElementById("feedback-modal").classList.add("hidden");
+
+        // ✅ Reactivează opțiunile pentru cardul curent
+        if (currentPachet && currentStart) {
+            const cid = `opt-${safeId(currentPachet, currentStart)}`;
+            const optDiv = document.getElementById(cid);
+            if (optDiv) optDiv.classList.remove("hidden");
+        }
+    }
+
+    function handleVreiSaVizitezi(destinatieEncoded, containerId) {
+        window.open(`https://www.google.com/search?q=${destinatieEncoded}`, "_blank");
+        document.getElementById(containerId).classList.add("hidden");
+
+        // ✅ Reactivează opțiunile data viitoare
+        setTimeout(() => {
+            const el = document.getElementById(containerId);
+            if (el) el.classList.remove("hidden");
+        }, 1000);
+    }
+
+
+
+
+    function submitFeedback() {
+        const comentariu = document.getElementById("comentariu").value;
+        const username = document.getElementById("username").value;
+        const rating = parseInt(document.getElementById("rating").value);
+
+        fetch("http://localhost:8080/api/top-feedback", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                numePachet: currentPachet,
+                orasStart: currentStart,
+                comentariu,
+                rating,
+                username
+            })
+        })
+            .then(() => {
+                alert("Mulțumim pentru feedback!");
+
+                // ✅ Golește câmpurile
+                document.getElementById("comentariu").value = "";
+                document.getElementById("username").value = "";
+                document.getElementById("rating").value = "5";
+
+                // ✅ Închide modalul
+                closeModal();
+
+                // ✅ Reîncarcă comentariile + ratingul
+                loadRating(currentPachet, currentStart);
+            })
+            .catch(err => {
+                alert("Eroare la trimiterea feedback-ului.");
+                console.error(err);
+            });
+    }
+
+
 </script>
-
-
 
 </body>
 </html>

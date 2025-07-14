@@ -2,7 +2,9 @@ package com.example.vacationrecommender.controller;
 
 import com.example.vacationrecommender.dto.GlobDTO;
 import com.example.vacationrecommender.service.GlobService;
+import com.example.vacationrecommender.service.TranslationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -61,9 +63,6 @@ public class GlobController {
 
 
 
-
-    // În GlobController.java
-
     @GetMapping("/details/{xid}")
     public ResponseEntity<?> getAttractionDetails(@PathVariable String xid) {
         if (xid == null || xid.isBlank() || xid.equals("null")) {
@@ -76,9 +75,6 @@ public class GlobController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Eroare la obținerea detaliilor: " + e.getMessage());
         }
     }
-
-
-
 
 
 }

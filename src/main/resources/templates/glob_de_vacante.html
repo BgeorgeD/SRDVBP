@@ -147,15 +147,26 @@
 <div id="popup" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
     background: white; padding: 24px; border-radius: 12px; max-width: 500px; box-shadow: 0 0 15px rgba(0,0,0,0.5);
     z-index: 2000;">
+
     <h2 id="popup-title"></h2>
     <p id="popup-location" style="font-style: italic; color: gray;"></p>
     <p id="popup-description"></p>
+
     <a id="popup-wikipedia" href="#" target="_blank" style="display:none; margin-top: 10px; color: blue;">Wikipedia</a>
-    <button onclick="document.getElementById('popup').style.display='none'"
-            style="margin-top: 12px; padding: 8px 16px; border: none; background: #007bff; color: white; border-radius: 6px; cursor: pointer;">
-        Închide
-    </button>
+
+    <div style="margin-top: 12px;">
+        <button onclick="translateDescription()" id="translateBtn"
+                style="padding: 8px 16px; border: none; background: #28a745; color: white; border-radius: 6px; cursor: pointer; margin-right: 10px;">
+            Tradu
+        </button>
+
+        <button onclick="document.getElementById('popup').style.display='none'"
+                style="padding: 8px 16px; border: none; background: #007bff; color: white; border-radius: 6px; cursor: pointer;">
+            Închide
+        </button>
+    </div>
 </div>
+
 
 <button id="startBtn">🎲 Începe jocul vacanței</button>
 
@@ -184,6 +195,9 @@
 </script>
 
 <script>
+
+
+
     let spinning = false;
 
     const terrain = Cesium.createWorldTerrain?.() || new Cesium.EllipsoidTerrainProvider();
@@ -307,6 +321,14 @@
 
                     document.getElementById("popup").style.display = 'block';
 
+                    // 🔁 RESETARE BUTON
+                    const translateBtn = document.getElementById("translateBtn");
+                    if (translateBtn) {
+                        translateBtn.innerText = "Tradu";
+                        translateBtn.disabled = false;
+                        translateBtn.style.backgroundColor = "#28a745";
+                    }
+
                 } catch (err) {
                     console.error("Eroare la detalii:", err);
                     alert("Nu s-au putut obține detalii.");
@@ -316,10 +338,66 @@
 
 
 
+
+
+
+
             document.getElementById("results").appendChild(card);
         });
-
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+
+    function translateDescription() {
+        const titleElem = document.getElementById("popup-title");
+        const locationElem = document.getElementById("popup-location");
+        const descElem = document.getElementById("popup-description");
+        const translateBtn = document.getElementById("translateBtn");
+
+        const originalTitle = titleElem.innerText.trim();
+        const originalLocation = locationElem.innerText.trim();
+        const originalDescription = descElem.innerText.trim();
+
+        if (originalDescription === "Nicio descriere disponibilă.") {
+            translateBtn.innerText = "Nimic de tradus";
+            translateBtn.disabled = true;
+            translateBtn.style.backgroundColor = "#6c757d";
+            return;
+        }
+
+        translateBtn.innerText = "Se traduce...";
+        translateBtn.disabled = true;
+
+        fetch("/api/translate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                text: `${originalTitle}|||${originalLocation}|||${originalDescription}`,
+                targetLang: "RO"
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                const [translatedTitle, translatedLocation, translatedDescription] = data.translatedText.split("|||");
+
+                titleElem.innerText = translatedTitle?.trim() || originalTitle;
+                locationElem.innerText = translatedLocation?.trim() || originalLocation;
+                descElem.innerText = translatedDescription?.trim() || originalDescription;
+
+                translateBtn.innerText = "Tradus ✅";
+            })
+            .catch(err => {
+                console.error("Eroare traducere:", err);
+                alert("Nu s-a putut realiza traducerea.");
+                translateBtn.innerText = "Tradu din nou";
+                translateBtn.disabled = false;
+            });
+    }
+
+
+
+
 
 
 
